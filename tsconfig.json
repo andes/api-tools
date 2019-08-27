@@ -1,0 +1,11 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@event/bus/*": [
+        "./event-bus/src"
+      ],
+    }
+  }
+}

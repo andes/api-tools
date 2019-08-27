@@ -1,0 +1,29 @@
+{
+  "name": "@andes/event-bus",
+  "version": "0.1.0",
+  "description": "",
+  "main": "build/index.js",
+  "module": "build/index.js",
+  "typings": "build/index.d.ts",
+  "scripts": {
+    "prepare": "tsc -p tsconfig.build.json",
+    "start": "tsc -p tsconfig.build.json -w",
+    "lint": "tslint --project tsconfig.build.json"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "pattern-emitter": "^1.0.0"
+  },
+  "devDependencies": {
+    "@types/jest": "^22.1.1",
+    "@types/node": "^8.0.28",
+    "jest": "^22.1.4",
+    "ts-jest": "^22.0.2",
+    "tslint": "^5.9.1",
+    "tslint-eslint-rules": "^5.4.0",
+    "tslint-react": "^3.4.0",
+    "typescript": "^3.0.0"
+  }
+}
