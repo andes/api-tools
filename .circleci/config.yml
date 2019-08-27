@@ -89,6 +89,9 @@ jobs:
       - run:
           name: Bootstrap via Lerna
           command: yarn bootstrap
+      - run:
+          name: Lint commits messages
+          command: yarn run commitlint-circle
       - persist_to_workspace:
           root: .
           paths:
@@ -97,7 +100,9 @@ jobs:
             - mongoose-plugin-audit/node_modules
             - api-tool/node_modules
             - query-builder/node_modules
+ 
 
+      
   event-bus:
     <<: *defaults
     working_directory: ~/api-tools-builds
