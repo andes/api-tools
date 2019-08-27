@@ -18,6 +18,7 @@
   "workspaces": [
     "event-bus",
     "mongoose-plugin-audit",
-    "api-tool"
+    "api-tool",
+    "query-builder"
   ]
 }

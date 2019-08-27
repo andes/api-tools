@@ -3,7 +3,8 @@
   "packages": [
     "event-bus",
     "mongoose-plugin-audit",
-    "api-tool"
+    "api-tool",
+    "query-builder"
   ],
   "npmClient": "yarn",
   "useWorkspaces": true,
