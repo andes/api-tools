@@ -1,0 +1,107 @@
+version: 2
+
+defaults: &defaults
+  docker:
+    - image: circleci/node:10
+  working_directory: ~/api-tools-builds
+
+jobs:
+  clone_and_hash:
+    <<: *defaults
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - v1-project-metadata-{{ .Branch }}
+            - v1-project-metadata-master
+
+      - run:
+          name: Initialize project metadata
+          command: |
+            mkdir -p .project-metadata
+            touch .event-bus
+
+      - run:
+          name: Hash projects
+          command: |
+            git log --pretty=format:'%H' -n 1 -- event-bus-hash > .event-bus-hash.new
+
+      - run:
+          name: Determine changed projects
+          command: |
+            if ! diff .event-bus-hash{,.new} > /dev/null; then
+              touch .project-metadata/.event-bus-changed
+            fi
+
+      - run:
+          name: Set current project hashes
+          command: |
+            mv .event-bus-hash{.new,}
+
+      - persist_to_workspace:
+          root: .
+          paths:
+            - .project-metadata
+            - node_modules/
+            - event-bus/node_modules
+
+      - save_cache:
+          key: v1-project-metadata-{{ .Branch }}-{{ epoch }}
+          paths:
+            - .event-bus-hash
+
+  bootstrap:
+    <<: *defaults
+    working_directory: ~/api-tools-builds
+    steps:
+      - checkout: { path: ~/api-tools-builds }
+      - attach_workspace: { at: . }
+      - run:
+          name: Install top-level dependencies
+          command: yarn install
+      - run:
+          name: Bootstrap via Lerna
+          command: yarn bootstrap
+      - persist_to_workspace:
+          root: .
+          paths:
+            - node_modules/
+            - event-bus/node_modules
+
+  event-bus:
+    <<: *defaults
+    working_directory: ~/api-tools-builds
+    steps:
+      - checkout: { path: ~/api-tools-builds }
+      - attach_workspace: { at: . }
+      - run:
+          name: Check whether project changed
+          command: |
+            if [ -e .project-metadata/.event-bus-changed ]; then
+              echo "let's do this"
+            else
+              echo "nothing to do"
+            fi
+      - run:
+          name: Lint event-bus
+          command: yarn test --scope=@andes/event-bus
+
+      - run:
+          name: Test event-bus
+          command: yarn test --scope=@andes/event-bus
+
+workflows:
+  version: 2
+
+  build_test_deploy:
+    jobs:
+      - clone_and_hash
+      - bootstrap:
+          requires:
+            - clone_and_hash
+
+      # Shared Packages
+      - event-bus:
+          requires:
+            - clone_and_hash
+            - bootstrap
