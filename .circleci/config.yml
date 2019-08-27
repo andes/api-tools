@@ -19,12 +19,14 @@ jobs:
           name: Initialize project metadata
           command: |
             mkdir -p .project-metadata
-            touch .event-bus
+            touch .event-bus-hash
+            touch .mongoose-plugin-audit-hash
 
       - run:
           name: Hash projects
           command: |
-            git log --pretty=format:'%H' -n 1 -- event-bus-hash > .event-bus-hash.new
+            git log --pretty=format:'%H' -n 1 -- event-bus > .event-bus-hash.new
+            git log --pretty=format:'%H' -n 1 -- mongoose-plugin-audit > .mongoose-plugin-audit-hash.new
 
       - run:
           name: Determine changed projects
@@ -33,10 +35,15 @@ jobs:
               touch .project-metadata/.event-bus-changed
             fi
 
+            if ! diff .mongoose-plugin-audit-hash{,.new} > /dev/null; then
+              touch .project-metadata/.mongoose-plugin-audit-changed
+            fi
+
       - run:
           name: Set current project hashes
           command: |
             mv .event-bus-hash{.new,}
+            mv .mongoose-plugin-audit-hash{.new,}
 
       - persist_to_workspace:
           root: .
@@ -44,11 +51,13 @@ jobs:
             - .project-metadata
             - node_modules/
             - event-bus/node_modules
+            - mongoose-plugin-audit/node_modules
 
       - save_cache:
           key: v1-project-metadata-{{ .Branch }}-{{ epoch }}
           paths:
             - .event-bus-hash
+            - .mongoose-plugin-audit-hash
 
   bootstrap:
     <<: *defaults
@@ -67,6 +76,7 @@ jobs:
           paths:
             - node_modules/
             - event-bus/node_modules
+            - mongoose-plugin-audit/node_modules
 
   event-bus:
     <<: *defaults
@@ -89,6 +99,28 @@ jobs:
       - run:
           name: Test event-bus
           command: yarn test --scope=@andes/event-bus
+  
+  mongoose-plugin-audit:
+    <<: *defaults
+    working_directory: ~/api-tools-builds
+    steps:
+      - checkout: { path: ~/api-tools-builds }
+      - attach_workspace: { at: . }
+      - run:
+          name: Check whether project changed
+          command: |
+            if [ -e .project-metadata/.mongoose-plugin-audit-changed ]; then
+              echo "let's do this"
+            else
+              echo "nothing to do"
+            fi
+      - run:
+          name: Lint mongoose-plugin-audit
+          command: yarn test --scope=@andes/mongoose-plugin-audit
+
+      - run:
+          name: Test mongoose-plugin-audit
+          command: yarn test --scope=@andes/mongoose-plugin-audit
 
 workflows:
   version: 2
@@ -105,3 +137,8 @@ workflows:
           requires:
             - clone_and_hash
             - bootstrap
+      - mongoose-plugin-audit:
+          requires:
+            - clone_and_hash
+            - bootstrap
+

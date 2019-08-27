@@ -1,0 +1,31 @@
+{
+  "name": "@andes/mongoose-plugin-audit",
+  "version": "0.1.0",
+  "description": "",
+  "main": "build/index.js",
+  "module": "build/index.js",
+  "typings": "build/index.d.ts",
+  "scripts": {
+    "prepare": "tsc -p tsconfig.build.json",
+    "start": "tsc -p tsconfig.build.json -w",
+    "lint": "tslint --project tsconfig.build.json",
+    "test": "jest"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "mongoose": "^5.6.11"
+  },
+  "devDependencies": {
+    "@types/jest": "^22.1.1",
+    "@types/mongoose": "^5.5.13",
+    "@types/node": "^10.0.0",
+    "jest": "^22.1.4",
+    "ts-jest": "^22.0.2",
+    "tslint": "^5.9.1",
+    "tslint-eslint-rules": "^5.4.0",
+    "tslint-react": "^3.4.0",
+    "typescript": "^3.0.0"
+  }
+}
