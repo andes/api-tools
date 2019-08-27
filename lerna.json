@@ -2,7 +2,8 @@
   "lerna": "2.8.0",
   "packages": [
     "event-bus",
-    "mongoose-plugin-audit"
+    "mongoose-plugin-audit",
+    "api-tool"
   ],
   "npmClient": "yarn",
   "useWorkspaces": true,

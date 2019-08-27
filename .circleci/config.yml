@@ -21,12 +21,14 @@ jobs:
             mkdir -p .project-metadata
             touch .event-bus-hash
             touch .mongoose-plugin-audit-hash
+            touch .api-tool-hash
 
       - run:
           name: Hash projects
           command: |
             git log --pretty=format:'%H' -n 1 -- event-bus > .event-bus-hash.new
             git log --pretty=format:'%H' -n 1 -- mongoose-plugin-audit > .mongoose-plugin-audit-hash.new
+            git log --pretty=format:'%H' -n 1 -- api-tool > .api-tool-hash.new
 
       - run:
           name: Determine changed projects
@@ -39,11 +41,16 @@ jobs:
               touch .project-metadata/.mongoose-plugin-audit-changed
             fi
 
+            if ! diff .api-tool-hash{,.new} > /dev/null; then
+              touch .project-metadata/.api-tool-changed
+            fi
+
       - run:
           name: Set current project hashes
           command: |
             mv .event-bus-hash{.new,}
             mv .mongoose-plugin-audit-hash{.new,}
+            mv .api-tool-hash{.new,}
 
       - persist_to_workspace:
           root: .
@@ -52,12 +59,14 @@ jobs:
             - node_modules/
             - event-bus/node_modules
             - mongoose-plugin-audit/node_modules
+            - api-tool/node_modules
 
       - save_cache:
           key: v1-project-metadata-{{ .Branch }}-{{ epoch }}
           paths:
             - .event-bus-hash
             - .mongoose-plugin-audit-hash
+            - .api-tool-hash
 
   bootstrap:
     <<: *defaults
@@ -77,6 +86,7 @@ jobs:
             - node_modules/
             - event-bus/node_modules
             - mongoose-plugin-audit/node_modules
+            - api-tool/node_modules
 
   event-bus:
     <<: *defaults
@@ -122,6 +132,28 @@ jobs:
           name: Test mongoose-plugin-audit
           command: yarn test --scope=@andes/mongoose-plugin-audit
 
+  api-tool:
+    <<: *defaults
+    working_directory: ~/api-tools-builds
+    steps:
+      - checkout: { path: ~/api-tools-builds }
+      - attach_workspace: { at: . }
+      - run:
+          name: Check whether project changed
+          command: |
+            if [ -e .project-metadata/.api-tool-changed ]; then
+              echo "let's do this"
+            else
+              echo "nothing to do"
+            fi
+      - run:
+          name: Lint api-tool
+          command: yarn run lint --scope=@andes/api-tool
+
+      - run:
+          name: Test api-tool
+          command: yarn test --scope=@andes/api-tool
+
 workflows:
   version: 2
 
@@ -138,6 +170,10 @@ workflows:
             - clone_and_hash
             - bootstrap
       - mongoose-plugin-audit:
+          requires:
+            - clone_and_hash
+            - bootstrap
+      - api-tool:
           requires:
             - clone_and_hash
             - bootstrap

@@ -17,6 +17,7 @@
   },
   "workspaces": [
     "event-bus",
-    "mongoose-plugin-audit"
+    "mongoose-plugin-audit",
+    "api-tool"
   ]
 }
