@@ -8,7 +8,8 @@
   "scripts": {
     "prepare": "tsc -p tsconfig.build.json",
     "start": "tsc -p tsconfig.build.json -w",
-    "lint": "tslint --project tsconfig.build.json"
+    "lint": "tslint --project tsconfig.build.json",
+    "test": "jest"
   },
   "keywords": [],
   "author": "",

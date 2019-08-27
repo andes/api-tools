@@ -1,7 +1,6 @@
 const Emitter = require('pattern-emitter');
 
 export class EventBus extends Emitter {
-
     /**
      * Emite un evento de forma asincrónica
      * @param {string} event Nombre del evento a emitir
