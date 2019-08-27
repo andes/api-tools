@@ -9,12 +9,13 @@
     "build": "npm run prepare && lerna run --parallel build"
   },
   "devDependencies": {
-    "@types/node": "^8.0.28",
+    "@types/node": "^10.0.0",
     "lerna": "2.8.0",
     "rimraf": "^2.6.2",
     "typescript": "^2.5.2"
   },
   "workspaces": [
-    "event-bus"
+    "event-bus",
+    "mongoose-plugin-audit"
   ]
 }

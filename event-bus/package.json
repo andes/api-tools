@@ -19,7 +19,7 @@
   },
   "devDependencies": {
     "@types/jest": "^22.1.1",
-    "@types/node": "^8.0.28",
+    "@types/node": "^10.0.0",
     "jest": "^22.1.4",
     "ts-jest": "^22.0.2",
     "tslint": "^5.9.1",
