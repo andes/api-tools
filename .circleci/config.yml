@@ -94,7 +94,7 @@ jobs:
             fi
       - run:
           name: Lint event-bus
-          command: yarn test --scope=@andes/event-bus
+          command: yarn run lint --scope=@andes/event-bus
 
       - run:
           name: Test event-bus
@@ -116,7 +116,7 @@ jobs:
             fi
       - run:
           name: Lint mongoose-plugin-audit
-          command: yarn test --scope=@andes/mongoose-plugin-audit
+          command: yarn run lint --scope=@andes/mongoose-plugin-audit
 
       - run:
           name: Test mongoose-plugin-audit

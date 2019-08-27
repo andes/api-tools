@@ -4,6 +4,7 @@
     "clean": "lerna clean",
     "bootstrap": "lerna bootstrap",
     "test": "CI=true lerna run test --stream",
+    "lint": "CI=true lerna run lint --stream",
     "start": "lerna run --parallel start",
     "prepare": "rimraf event-bus/build && lerna run prepare",
     "build": "npm run prepare && lerna run --parallel build"
