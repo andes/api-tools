@@ -3,8 +3,17 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@event/bus/*": [
+      "@andes/event-bus/*": [
         "./event-bus/src"
+      ],
+      "@andes/api-tool/*": [
+        "./api-tool/src"
+      ],
+      "@andes/query-builder/*": [
+        "./query-builder/src"
+      ],
+      "@andes/mongoose-plugin-audit/*": [
+        "./mongoose-plugin-audit/src"
       ],
     }
   }

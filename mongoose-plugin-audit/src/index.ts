@@ -10,7 +10,10 @@ export function AuditPlugin(schema: mongoose.Schema) {
     });
 
     // Define un método que debe llamarse en el documento principal antes de ejecutar .save()
-    schema.methods.audit = function (user: any) {
+    schema.methods.audit = function (req: any) {
+        const user = { ... (req.user.usuario || req.user.app) };
+        user.organizacion = req.user.organizacion;
+
         this.$audit = user;
     };
 
