@@ -29,6 +29,6 @@
     "event-bus",
     "mongoose-plugin-audit",
     "api-tool",
-    "query-builder"
+    "core"
   ]
 }

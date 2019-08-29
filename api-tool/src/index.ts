@@ -1,4 +1,4 @@
-import * as asyncHandler from 'express-async-handler';
+import * as _asyncHandler from 'express-async-handler';
 import { Request as ERequest, Response as EResponse, Router, NextFunction } from 'express';
 
 
@@ -9,6 +9,10 @@ export function apiOptions(req: ERequest): IOptions {
     options.skip = req.query.skip ? parseInt(req.query.skip, 10) : 0;
     return options;
 }
+
+const asyncHandler = (handler: any) => {
+    return (_asyncHandler as any)(handler);
+};
 
 export {
     asyncHandler,

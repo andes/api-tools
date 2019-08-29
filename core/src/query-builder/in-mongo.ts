@@ -74,7 +74,7 @@ export function queryArray(fieldName: string, values: any[], keyName: string, va
 
 export function buildQuery(query: object, searchSpecification: object) {
     const mongoQuery = {};
-    const arrayFilter: object[] = [];
+    const $and: object[] = [];
     Object.keys(query).forEach((fieldName) => {
 
 
@@ -91,12 +91,12 @@ export function buildQuery(query: object, searchSpecification: object) {
             if (!mongoFind['$and'] && !mongoFind['$or']) {
                 mongoQuery[field] = mongoFind;
             } else {
-                arrayFilter.push(mongoFind);
+                $and.push(mongoFind);
             }
         }
     });
-    if (arrayFilter.length > 0) {
-        mongoQuery['$and'] = arrayFilter;
+    if ($and.length > 0) {
+        mongoQuery['$and'] = $and;
     }
     return mongoQuery;
 }

@@ -9,8 +9,8 @@
       "@andes/api-tool/*": [
         "./api-tool/src"
       ],
-      "@andes/query-builder/*": [
-        "./query-builder/src"
+      "@andes/core/*": [
+        "./core/src"
       ],
       "@andes/mongoose-plugin-audit/*": [
         "./mongoose-plugin-audit/src"
