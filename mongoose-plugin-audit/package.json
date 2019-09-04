@@ -1,6 +1,6 @@
 {
   "name": "@andes/mongoose-plugin-audit",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "",
   "main": "build/index.js",
   "module": "build/index.js",
@@ -9,7 +9,8 @@
     "prepare": "tsc -p tsconfig.build.json",
     "start": "tsc -p tsconfig.build.json -w",
     "lint": "tslint --project tsconfig.build.json",
-    "test": "jest"
+    "test": "jest",
+    "prepublishOnly": "tsc -p tsconfig.build.json"
   },
   "keywords": [],
   "author": "",
