@@ -7,6 +7,7 @@ export type ObjectId = string | Types.ObjectId;
 
 /**
  * [TODO] Manejo de errores
+ * [TODO] Simple searchFilter from schema type by default
  */
 
 export abstract class ResourceBase {
@@ -18,6 +19,7 @@ export abstract class ResourceBase {
 
     public routesEnable = ['get', 'find', 'post', 'patch', 'delete'];
 
+    public middlewares: any[] = [];
     public routesAuthorization = {};
 
     public eventBus: any = null;
@@ -39,7 +41,7 @@ export abstract class ResourceBase {
         return this.routesEnable.includes(routeName);
     }
 
-    private checkAuthorization(routeName: string, req: Request) {
+    public checkAuthorization(routeName: string, req: Request) {
         const checker = this.routesAuthorization[routeName];
         if (!checker) {
             return true;
@@ -50,7 +52,6 @@ export abstract class ResourceBase {
 
         return checker(req);
     }
-
 
     public async create(dto: any, req: Request) {
         dto = this.populate(dto);
@@ -103,12 +104,18 @@ export abstract class ResourceBase {
         return null;
     }
 
-    public async find(data: any, options: IOptions) {
+    public async prefind(data: Object, req: Request) {
+        return {};
+    }
 
+    public async find(data: any, options: IOptions, req: Request) {
+        const preconditions = await this.prefind(data, req);
         const conditions = MongoQuery.buildQuery(data, this.searchFileds);
-
         const { fields, skip, limit } = options;
-        let query = this.Model.find(conditions);
+        let query = this.Model.find({
+            ...preconditions,
+            ...conditions
+        });
 
         if (fields) {
             query.select(fields);
@@ -133,83 +140,97 @@ export abstract class ResourceBase {
     }
 
 
-    public makeRoutes() {
+    public makeRoutes(): Router {
         const router = Router();
 
         if (this.isRouteEnabled('find')) {
-            router.get(`/${this.resourceName}`, asyncHandler(async (req: Request, res: Response) => {
-                if (!this.checkAuthorization('find', req)) {
-                    throw new Error('unauthorize');
-                }
-                const options = req.apiOptions();
-                const data = req.query;
-                const plantillas = await this.find(data, options);
-                return res.json(plantillas);
-            }));
+            router.get(`/${this.resourceName}`, ...this.middlewares, asyncHandler(routesFunctions['find'].bind(this)));
         }
 
         if (this.isRouteEnabled('get')) {
-            router.get(`/${this.resourceName}/:id`, asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-                if (!this.checkAuthorization('get', req)) {
-                    throw new Error('unauthorize');
-                }
-                const options = req.apiOptions();
-                const id = req.params.id;
-                const document = await this.findById(id, options);
-                if (document) {
-                    return res.json(document);
-                } else {
-                    return next('NOT FOUND');
-                }
-            }));
+            router.get(`/${this.resourceName}/:id`, ...this.middlewares, asyncHandler(routesFunctions['get'].bind(this)));
         }
 
         if (this.isRouteEnabled('post')) {
-            router.post(`/${this.resourceName}`, asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-                if (!this.checkAuthorization('post', req)) {
-                    throw new Error('unauthorize');
-                }
-                const body = req.body;
-                const document = await this.create(body, req);
-                if (document) {
-                    return res.json(document);
-                } else {
-                    return next(422);
-                }
-            }));
+            router.post(`/${this.resourceName}`, ...this.middlewares, asyncHandler(routesFunctions['post'].bind(this)));
         }
 
         if (this.isRouteEnabled('patch')) {
-            router.patch(`/${this.resourceName}/:id`, asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-                if (!this.checkAuthorization('patch', req)) {
-                    throw new Error('unauthorize');
-                }
-                const id = req.params.id;
-                const body = req.body;
-                const document = await this.update(id, body, req);
-                if (document) {
-                    return res.json(document);
-                } else {
-                    return next(422);
-                }
-            }));
+            router.patch(`/${this.resourceName}/:id`, ...this.middlewares, asyncHandler(routesFunctions['patch'].bind(this)));
         }
 
         if (this.isRouteEnabled('delete')) {
-            router.delete(`/${this.resourceName}/:id`, asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-                if (!this.checkAuthorization('delete', req)) {
-                    throw new Error('unauthorize');
-                }
-                const id = req.params.id;
-                const document = await this.remove(id);
-                if (document) {
-                    return res.json(document);
-                } else {
-                    return next(422);
-                }
-            }));
+            router.delete(`/${this.resourceName}/:id`, ...this.middlewares, asyncHandler(routesFunctions['delete'].bind(this)));
         }
+
+        return router;
     }
 
 }
 
+const routesFunctions = {
+    async find(this: any, req: Request, res: Response) {
+        if (!this.checkAuthorization('find', req)) {
+            throw new Error('unauthorize');
+        }
+        const options = req.apiOptions();
+        const data = req.query;
+        const plantillas = await this.find(data, options, req);
+        return res.json(plantillas);
+    },
+
+    async get(this: any, req: Request, res: Response, next: NextFunction) {
+        if (!this.checkAuthorization('get', req)) {
+            throw new Error('unauthorize');
+        }
+        const options = req.apiOptions();
+        const id = req.params.id;
+        const document = await this.findById(id, options);
+        if (document) {
+            return res.json(document);
+        } else {
+            return next('NOT FOUND');
+        }
+    },
+
+    async post(this: any, req: Request, res: Response, next: NextFunction) {
+        if (!this.checkAuthorization('post', req)) {
+            throw new Error('unauthorize');
+        }
+        const body = req.body;
+        const document = await this.create(body, req);
+        if (document) {
+            return res.json(document);
+        } else {
+            return next(422);
+        }
+    },
+
+    async patch(this: any, req: Request, res: Response, next: NextFunction) {
+        if (!this.checkAuthorization('patch', req)) {
+            throw new Error('unauthorize');
+        }
+        const id = req.params.id;
+        const body = req.body;
+        const document = await this.update(id, body, req);
+        if (document) {
+            return res.json(document);
+        } else {
+            return next(422);
+        }
+    },
+
+    async delete(this: any, req: Request, res: Response, next: NextFunction) {
+        if (!this.checkAuthorization('delete', req)) {
+            throw new Error('unauthorize');
+        }
+        const id = req.params.id;
+        const document = await this.remove(id);
+        if (document) {
+            return res.json(document);
+        } else {
+            return next(422);
+        }
+    }
+
+};

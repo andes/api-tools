@@ -1,6 +1,7 @@
 import * as moment from 'moment';
 import { makePattern } from './utils';
 import { Types } from 'mongoose';
+import { isNullOrUndefined } from 'util';
 
 export function matchDate(date: Date) {
     return {
@@ -76,7 +77,9 @@ export function buildQuery(query: object, searchSpecification: object) {
     const mongoQuery = {};
     const $and: object[] = [];
     Object.keys(query).forEach((fieldName) => {
-
+        if (isNullOrUndefined(searchSpecification[fieldName])) {
+            return;
+        }
 
         const queryParam = searchSpecification[fieldName];
         const filterValue = query[fieldName];
