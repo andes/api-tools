@@ -11,13 +11,17 @@ export function AuditPlugin(schema: mongoose.Schema) {
 
     // Define un método que debe llamarse en el documento principal antes de ejecutar .save()
     schema.methods.audit = function (req: any) {
-        const user = { ... (req.user.usuario || req.user.app) };
-        user.organizacion = req.user.organizacion;
+        if (req.user) {
+            const user = { ... (req.user.usuario || req.user.app) };
+            user.organizacion = req.user.organizacion;
+            this.$audit = user;
+        } else {
+            this.$audit = req;
+        }
 
-        this.$audit = user;
     };
 
-    schema.pre('save', function (next) {
+    schema.pre('save', function (this: any, next: any) {
         const self = (this as any);
         let user = self.$audit;
         let o = self.ownerDocument && self.ownerDocument();
@@ -26,7 +30,7 @@ export function AuditPlugin(schema: mongoose.Schema) {
             o = o.ownerDocument && o.ownerDocument();
         }
 
-        if (!self) {
+        if (!user) {
             return next(new Error('AUDIT PLUGIN ERROR: Inicialice el plugin utilizando el método audit(). Ejemplo: myModel.audit(req.user)'));
         }
         // Todo ok...
