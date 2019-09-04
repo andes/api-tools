@@ -10,6 +10,11 @@ export function apiOptions(req: ERequest): IOptions {
     return options;
 }
 
+export function apiOptionsMiddleware(req: any, res: any, next: any) {
+    req.apiOptions = apiOptions.bind(null, req);
+    next();
+}
+
 const asyncHandler = (handler: any) => {
     return (_asyncHandler as any)(handler);
 };
