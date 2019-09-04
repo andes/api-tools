@@ -22,7 +22,7 @@ jobs:
             touch .event-bus-hash
             touch .mongoose-plugin-audit-hash
             touch .api-tool-hash
-            touch .query-builder-hash
+            touch .core-hash
 
       - run:
           name: Hash projects
@@ -30,7 +30,7 @@ jobs:
             git log --pretty=format:'%H' -n 1 -- event-bus > .event-bus-hash.new
             git log --pretty=format:'%H' -n 1 -- mongoose-plugin-audit > .mongoose-plugin-audit-hash.new
             git log --pretty=format:'%H' -n 1 -- api-tool > .api-tool-hash.new
-            git log --pretty=format:'%H' -n 1 -- query-builder > .query-builder-hash.new
+            git log --pretty=format:'%H' -n 1 -- core > .core-hash.new
 
       - run:
           name: Determine changed projects
@@ -47,8 +47,8 @@ jobs:
               touch .project-metadata/.api-tool-changed
             fi
 
-            if ! diff .query-builder-hash{,.new} > /dev/null; then
-              touch .project-metadata/.query-builder-changed
+            if ! diff .core-hash{,.new} > /dev/null; then
+              touch .project-metadata/.core-changed
             fi
 
       - run:
@@ -57,7 +57,7 @@ jobs:
             mv .event-bus-hash{.new,}
             mv .mongoose-plugin-audit-hash{.new,}
             mv .api-tool-hash{.new,}
-            mv .query-builder-hash{.new,}
+            mv .core-hash{.new,}
 
       - persist_to_workspace:
           root: .
@@ -67,7 +67,7 @@ jobs:
             - event-bus/node_modules
             - mongoose-plugin-audit/node_modules
             - api-tool/node_modules
-            - query-builder/node_modules
+            - core/node_modules
 
       - save_cache:
           key: v1-project-metadata-{{ .Branch }}-{{ epoch }}
@@ -99,7 +99,7 @@ jobs:
             - event-bus/node_modules
             - mongoose-plugin-audit/node_modules
             - api-tool/node_modules
-            - query-builder/node_modules
+            - core/node_modules
  
 
       
@@ -168,7 +168,7 @@ jobs:
       - run:
           name: Test api-tool
           command: yarn test --scope=@andes/api-tool
-  query-builder:
+  core:
     <<: *defaults
     working_directory: ~/api-tools-builds
     steps:
@@ -177,18 +177,18 @@ jobs:
       - run:
           name: Check whether project changed
           command: |
-            if [ -e .project-metadata/.query-builder-changed ]; then
+            if [ -e .project-metadata/.core-changed ]; then
               echo "let's do this"
             else
               echo "nothing to do"
             fi
       - run:
-          name: Lint query-builder
-          command: yarn run lint --scope=@andes/query-builder
+          name: Lint core
+          command: yarn run lint --scope=@andes/core
 
       - run:
-          name: Test query-builder
-          command: yarn test --scope=@andes/query-builder
+          name: Test core
+          command: yarn test --scope=@andes/core
 
 workflows:
   version: 2
@@ -212,9 +212,9 @@ workflows:
       - api-tool:
           requires:
             - clone_and_hash
-            - bootstrap
-      - query-builder:
+            - bootstrap 
+      - core:
           requires:
             - clone_and_hash
-            - bootstrap
+            - bootstrap 
 
