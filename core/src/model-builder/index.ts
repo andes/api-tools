@@ -5,22 +5,50 @@ import { MongoQuery } from '../query-builder';
 
 export type ObjectId = string | Types.ObjectId;
 
+export class ResourceNotFound extends Error {
+    status = 404;
+    message = 'recurso no encontrado';
+}
+
+export class ResourceForbidden extends Error {
+    status = 403;
+    message = 'forbidden';
+}
+
+export class CustomError extends Error {
+    status = 500;
+    constructor(message: string, status = 500) {
+        super();
+        this.message = message;
+        this.status = status;
+    }
+}
+
+export interface RouteConfiguration {
+    method?: string;
+    path: string;
+    callback: Function | string;
+}
+
 /**
- * [TODO] Manejo de errores
  * [TODO] Simple searchFilter from schema type by default
  */
 
 export abstract class ResourceBase {
     public abstract Model: _Model<any>;
 
+    public keyId = '_id';
+
     public resourceModule = '';
     public resourceName = '';
     public searchFileds: object = {};
 
-    public routesEnable = ['get', 'find', 'post', 'patch', 'delete'];
+    public routesEnable = ['get', 'search', 'post', 'patch', 'delete'];
 
     public middlewares: any[] = [];
     public routesAuthorization = {};
+
+    public extrasRoutes: RouteConfiguration[] = [];
 
     public eventBus: any = null;
 
@@ -33,12 +61,22 @@ export abstract class ResourceBase {
      * Se podría usar el middleware de mongoose
      */
 
-    public populate(dto: any) {
+    public async populate(dto: any) {
         return dto;
     }
 
     private isRouteEnabled(routeName: string) {
         return this.routesEnable.includes(routeName);
+    }
+
+    public makeMiddleware(routeName: string) {
+        let localMiddleware = this.routesAuthorization[routeName];
+        if (localMiddleware) {
+            localMiddleware = Array.isArray(localMiddleware) ? localMiddleware : [localMiddleware];
+        } else {
+            localMiddleware = [];
+        }
+        return [...this.middlewares, ...localMiddleware];
     }
 
     public checkAuthorization(routeName: string, req: Request) {
@@ -47,14 +85,14 @@ export abstract class ResourceBase {
             return true;
         }
         if (typeof checker !== 'function') {
-            throw new Error(`routesAuthorization[${routeName}] must be a function`);
+            throw new CustomError(`routesAuthorization[${routeName}] must be a function`);
         }
 
         return checker(req);
     }
 
     public async create(dto: any, req: Request) {
-        dto = this.populate(dto);
+        dto = await this.populate(dto);
         const document = new this.Model(dto);
 
         if (document.audit) {
@@ -71,18 +109,19 @@ export abstract class ResourceBase {
     }
 
     public async update(id: ObjectId, data: any, req: Request) {
-        let document = await this.Model.findById(id);
+        const document = await this.findById(id, {});
         if (document) {
-            data = this.populate(data);
+            data = await this.populate(data);
             document.set(data);
 
             if (document.audit) {
                 document.audit(req);
             }
+            const fieldsChange = document.modifiedPaths();
             await document.save();
 
             if (this.eventBus) {
-                this.eventBus.emitAsync(`${this.resourceModule}:${this.resourceName}:update`, document);
+                this.eventBus.emitAsync(`${this.resourceModule}:${this.resourceName}:update`, document, fieldsChange);
             }
 
             return document;
@@ -91,7 +130,7 @@ export abstract class ResourceBase {
     }
 
     public async remove(id: ObjectId) {
-        const document = await this.Model.findById(id);
+        const document = await this.Model.findById(id, {});
         if (document) {
             const state = await document.remove();
 
@@ -104,12 +143,12 @@ export abstract class ResourceBase {
         return null;
     }
 
-    public async prefind(data: Object, req: Request) {
+    public async presearch(data: Object, req: Request) {
         return {};
     }
 
-    public async find(data: any, options: IOptions, req: Request) {
-        const preconditions = await this.prefind(data, req);
+    public async search(data: any, options: IOptions, req: Request) {
+        const preconditions = await this.presearch(data, req);
         const conditions = MongoQuery.buildQuery(data, this.searchFileds);
         const { fields, skip, limit } = options;
         let query = this.Model.find({
@@ -130,9 +169,11 @@ export abstract class ResourceBase {
         return await this.Model.find(query);
     }
 
-    public async findById(id: ObjectId, options: IOptions) {
+    public async findById(id: ObjectId | any, options: IOptions) {
         const { fields } = options;
-        const query = this.Model.findById(id);
+        const conditions = {};
+        conditions[this.keyId] = id;
+        const query = this.Model.findOne(conditions);
         if (fields) {
             query.select(fields);
         }
@@ -143,25 +184,45 @@ export abstract class ResourceBase {
     public makeRoutes(): Router {
         const router = Router();
 
-        if (this.isRouteEnabled('find')) {
-            router.get(`/${this.resourceName}`, ...this.middlewares, asyncHandler(routesFunctions['find'].bind(this)));
+        if (this.isRouteEnabled('search')) {
+            const middlewares = this.makeMiddleware('search');
+            router.get(`/${this.resourceName}`, ...middlewares, asyncHandler(routesFunctions['search'].bind(this)));
         }
 
         if (this.isRouteEnabled('get')) {
-            router.get(`/${this.resourceName}/:id`, ...this.middlewares, asyncHandler(routesFunctions['get'].bind(this)));
+            const middlewares = this.makeMiddleware('get');
+            router.get(`/${this.resourceName}/:id`, ...middlewares, asyncHandler(routesFunctions['get'].bind(this)));
         }
 
         if (this.isRouteEnabled('post')) {
-            router.post(`/${this.resourceName}`, ...this.middlewares, asyncHandler(routesFunctions['post'].bind(this)));
+            const middlewares = this.makeMiddleware('post');
+            router.post(`/${this.resourceName}`, ...middlewares, asyncHandler(routesFunctions['post'].bind(this)));
         }
 
         if (this.isRouteEnabled('patch')) {
-            router.patch(`/${this.resourceName}/:id`, ...this.middlewares, asyncHandler(routesFunctions['patch'].bind(this)));
+            const middlewares = this.makeMiddleware('patch');
+            router.patch(`/${this.resourceName}/:id`, ...middlewares, asyncHandler(routesFunctions['patch'].bind(this)));
         }
 
         if (this.isRouteEnabled('delete')) {
-            router.delete(`/${this.resourceName}/:id`, ...this.middlewares, asyncHandler(routesFunctions['delete'].bind(this)));
+            const middlewares = this.makeMiddleware('delete');
+            router.delete(`/${this.resourceName}/:id`, ...middlewares, asyncHandler(routesFunctions['delete'].bind(this)));
         }
+
+        this.extrasRoutes.forEach((route) => {
+            const path = `/${this.resourceName}/${route.path}`;
+            const fnMethod: Function = router[route.method || 'get'];
+
+            let middlewares = this.middlewares;
+            let callback;
+            if (typeof route.callback === 'string') {
+                middlewares = this.makeMiddleware(route.callback);
+                callback = this[route.callback];
+            } else {
+                callback = route.callback;
+            }
+            fnMethod.call(router, path, ...middlewares, asyncHandler(callback.bind(this)));
+        });
 
         return router;
     }
@@ -169,20 +230,14 @@ export abstract class ResourceBase {
 }
 
 const routesFunctions = {
-    async find(this: any, req: Request, res: Response) {
-        if (!this.checkAuthorization('find', req)) {
-            throw new Error('unauthorize');
-        }
+    async search(this: ResourceBase, req: Request, res: Response) {
         const options = req.apiOptions();
         const data = req.query;
-        const plantillas = await this.find(data, options, req);
+        const plantillas = await this.search(data, options, req);
         return res.json(plantillas);
     },
 
-    async get(this: any, req: Request, res: Response, next: NextFunction) {
-        if (!this.checkAuthorization('get', req)) {
-            throw new Error('unauthorize');
-        }
+    async get(this: ResourceBase, req: Request, res: Response, next: NextFunction) {
         const options = req.apiOptions();
         const id = req.params.id;
         const document = await this.findById(id, options);
@@ -193,10 +248,7 @@ const routesFunctions = {
         }
     },
 
-    async post(this: any, req: Request, res: Response, next: NextFunction) {
-        if (!this.checkAuthorization('post', req)) {
-            throw new Error('unauthorize');
-        }
+    async post(this: ResourceBase, req: Request, res: Response, next: NextFunction) {
         const body = req.body;
         const document = await this.create(body, req);
         if (document) {
@@ -206,30 +258,24 @@ const routesFunctions = {
         }
     },
 
-    async patch(this: any, req: Request, res: Response, next: NextFunction) {
-        if (!this.checkAuthorization('patch', req)) {
-            throw new Error('unauthorize');
-        }
+    async patch(this: ResourceBase, req: Request, res: Response, next: NextFunction) {
         const id = req.params.id;
         const body = req.body;
         const document = await this.update(id, body, req);
         if (document) {
             return res.json(document);
         } else {
-            return next(422);
+            throw new ResourceNotFound();
         }
     },
 
-    async delete(this: any, req: Request, res: Response, next: NextFunction) {
-        if (!this.checkAuthorization('delete', req)) {
-            throw new Error('unauthorize');
-        }
+    async delete(this: ResourceBase, req: Request, res: Response, next: NextFunction) {
         const id = req.params.id;
         const document = await this.remove(id);
         if (document) {
             return res.json(document);
         } else {
-            return next(422);
+            throw new ResourceNotFound();
         }
     }
 
