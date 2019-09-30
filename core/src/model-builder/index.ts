@@ -94,7 +94,6 @@ export abstract class ResourceBase {
     public async create(dto: any, req: Request) {
         dto = await this.populate(dto);
         const document = new this.Model(dto);
-
         if (document.audit) {
             document.audit(req);
         }

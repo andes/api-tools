@@ -1,4 +1,5 @@
-import * as _asyncHandler from 'express-async-handler';
+// import * as _asyncHandler from 'express-async-handler';
+const _asyncHandler = require('express-async-handler');
 import { Request as ERequest, Response as EResponse, Router, NextFunction } from 'express';
 
 

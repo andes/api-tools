@@ -1,7 +1,14 @@
 const mongoose = require('mongoose');
+const bodyParser = require('body-parser');
+
 import { MongoMemoryServer } from 'mongodb-memory-server-global';
 import { ResourceBase } from './index';
 import { MongoQuery } from '../query-builder/in-mongo';
+import { apiOptionsMiddleware } from '@andes/api-tool';
+
+
+const request = require('supertest');
+const express = require('express');
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 600000;
 
@@ -167,5 +174,125 @@ describe('ReouserBase searching', () => {
     test('searching with custom fields result', async () => {
         const search = await personaResource.search({ customField: '^santa' }, { fields: '-nombre' }, {} as any);
         expect(search[0].nombre).toBeUndefined();
+    });
+});
+
+
+describe('API - Test', () => {
+    let PersonaModel: any;
+    let personaResource: any;
+    let app: any;
+    beforeAll(async () => {
+        const schema = new mongoose.Schema({ nombre: String, active: Boolean });
+        PersonaModel = mongoose.model('personas_api', schema);
+
+        class Personas extends ResourceBase {
+            Model = PersonaModel;
+            resourceName = 'personas';
+
+            searchFileds = {
+                active: (b: any) => b,
+                nombre: (text: string) => text
+            };
+
+        }
+        personaResource = new Personas({});
+
+        app = express();
+
+        const router = personaResource.makeRoutes();
+        app.use(bodyParser.json({ limit: '150mb' }));
+        app.use(bodyParser.urlencoded({
+            extended: true
+        }));
+        app.use(apiOptionsMiddleware);
+        app.use('/api', router);
+
+        app.use((err: any, req: any, res: any, next: any) => {
+            if (err) {
+                // Parse err
+                let e: Error;
+                if (!isNaN(err)) {
+                    e = new Error('');
+                    (e as any).status = err;
+                    err = e;
+                } else {
+                    if (typeof err === 'string') {
+                        e = new Error(err);
+                        (e as any).status = 400;
+                        err = e;
+                    } else if (!err.status) {
+                        err.status = 500;
+                    }
+                }
+
+                // IMPORTANTE: Express app.get('env') returns 'development' if NODE_ENV is not defined.
+                // O sea, la API está corriendo siempre en modo development
+
+                // Send response
+                res.status(err.status);
+                res.send({
+                    message: err.message,
+                    error: (app.get('env') === 'development') ? err : null
+                });
+            }
+        });
+
+    });
+
+    it('empty get', () => {
+        return request(app)
+            .get('/api/personas')
+            .expect(200)
+            .then((response: any) => {
+                expect(response.body).toHaveLength(0);
+            });
+    });
+
+    it('create element', () => {
+        return request(app)
+            .post('/api/personas')
+            .send({ nombre: 'Juan', active: false })
+            .set('Accept', 'application/json')
+            .expect(200)
+            .then(async (response: any) => {
+                expect(response.body.nombre).toBe('Juan');
+                const search = await personaResource.search({ nombre: 'Juan' }, {}, {} as any);
+                expect(search).toHaveLength(1);
+            });
+    });
+
+    it('searching api', async () => {
+        await personaResource.create({ nombre: 'Perez Jorge', active: true }, {} as any);
+        await personaResource.create({ nombre: 'Perez', active: false }, {} as any);
+
+        return request(app)
+            .get('/api/personas?nombre=Perez')
+            .set('Accept', 'application/json')
+            .expect(200)
+            .then((response: any) => {
+                expect(response.body).toHaveLength(1);
+
+            });
+    });
+
+    it('delete api', async () => {
+        const m: any = await personaResource.create({ nombre: 'Perez Jorge', active: true }, {} as any);
+
+        return request(app)
+            .delete('/api/personas/' + m._id)
+            .set('Accept', 'application/json')
+            .expect(200)
+            .then(async (response: any) => {
+                const mm = await personaResource.findById(m._id, {});
+                expect(mm).toBeNull();
+            });
+    });
+
+    it('delete api not found', async () => {
+        return request(app)
+            .delete('/api/personas/5d9243a87e515675833921c4')
+            .set('Accept', 'application/json')
+            .expect(404);
     });
 });
