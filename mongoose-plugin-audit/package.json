@@ -23,6 +23,7 @@
     "@types/mongoose": "^5.5.13",
     "@types/node": "^10.0.0",
     "jest": "^22.1.4",
+    "mongodb-memory-server-global": "^5.2.5",
     "ts-jest": "^22.0.2",
     "tslint": "^5.9.1",
     "tslint-eslint-rules": "^5.4.0",
