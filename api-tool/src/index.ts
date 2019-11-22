@@ -35,6 +35,7 @@ export interface IOptions {
 export interface Request extends ERequest {
     apiOptions(): IOptions;
     resources: any;
+    user: any;
 }
 
 export interface Response extends EResponse {
