@@ -64,3 +64,21 @@ export function AuditPlugin(schema: mongoose.Schema) {
         return this._original;
     };
 }
+
+function extractUser(user: any) {
+    const usuario: any = { ... (user.usuario || user.app) };
+    usuario.organizacion = user.organizacion;
+    return usuario;
+}
+
+export function AuditDocument(document: any, user: any) {
+    const userData = extractUser(user);
+
+    if (!document.createdAt) {
+        document.createdAt = new Date();
+        document.createdBy = userData;
+    } else {
+        document.updatedAt = new Date();
+        document.updatedBy = userData;
+    }
+}

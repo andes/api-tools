@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-import { AuditPlugin } from './index';
+import { AuditPlugin, AuditDocument } from './index';
 import { MongoMemoryServer } from 'mongodb-memory-server-global';
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 600000;
@@ -48,6 +48,24 @@ test('should store createdAt field', async () => {
     const savedModel2: any = await Model.findById(m._id);
     expect(savedModel2.updatedAt).toBeDefined();
     expect(savedModel2.updatedBy.documento).toBe('123456');
+
+
+});
+
+
+test('AuditDocument test', () => {
+
+    const documento: any = { nombre: 'JUAN' };
+    const user: any = { usuario: { nombre: 'PEDRO' }, organizacion: { nombre: 'CASTRO' } };
+    AuditDocument(documento, user);
+
+    expect(documento.createdAt).toBeDefined();
+    expect(documento.createdBy.nombre).toBe('PEDRO');
+    expect(documento.updatedAt).toBeUndefined();
+
+    AuditDocument(documento, user);
+    expect(documento.updatedAt).toBeDefined();
+    expect(documento.updatedBy.nombre).toBe('PEDRO');
 
 
 });
