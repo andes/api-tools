@@ -3,11 +3,31 @@ import { makePattern } from './utils';
 import { Types } from 'mongoose';
 import { isNullOrUndefined } from 'util';
 
-export function matchDate(date: Date) {
-    return {
-        $gte: moment(date).startOf('day').toDate(),
-        $lte: moment(date).endOf('day').toDate()
-    };
+export function matchDate(value: string) {
+    let query = {};
+    let fecha;
+    let fechas = value.split('|');
+    if (fechas.length > 1) {
+        query = {
+            $gte: moment(new Date(fechas[0])).toDate(),
+            $lte: moment(new Date(fechas[1])).toDate()
+        };
+    } else {
+        if (value.substr(0, 2) === '>=') {
+            fecha = value.substr(2);
+            query = { $gte: moment(new Date(fecha)).startOf('day').toDate() };
+        } else if (value.substr(0, 1) === '>') {
+            fecha = value.substr(1);
+            query = { $gt: moment(new Date(fecha)).startOf('day').toDate() };
+        } else if (value.substr(0, 2) === '<=') {
+            fecha = value.substr(2);
+            query = { $lte: moment(new Date(fecha)).startOf('day').toDate() };
+        } else if (value.substr(0, 1) === '<') {
+            fecha = value.substr(1);
+            query = { $lt: moment(new Date(fecha)).startOf('day').toDate() };
+        }
+    }
+    return query;
 }
 
 export function partialString(value: string) {
