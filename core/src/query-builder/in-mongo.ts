@@ -22,6 +22,10 @@ export function matchString(value: string) {
     return value;
 }
 
+export function equalMatch(value: string | boolean | number) {
+    return value;
+}
+
 /**
  * Devuelve una query con elemMatch por keyName y valueName
  *
@@ -105,6 +109,7 @@ export function buildQuery(query: object, searchSpecification: object) {
 }
 
 export const MongoQuery = {
+    equalMatch,
     matchDate,
     partialString,
     matchString,

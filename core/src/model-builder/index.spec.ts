@@ -101,7 +101,7 @@ describe('ReouserBase searching', () => {
         class Personas extends ResourceBase {
             Model = PersonaModel;
             searchFileds = {
-                active: (b: any) => b,
+                active: MongoQuery.equalMatch,
                 nombre: MongoQuery.partialString,
                 laboral: (value: string) => {
                     return MongoQuery.queryArray('direccion', [`laboral|${value}`], 'tipo', 'calle');
