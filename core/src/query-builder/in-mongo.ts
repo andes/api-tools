@@ -1,4 +1,4 @@
-import * as moment from 'moment';
+import moment from 'moment';
 import { makePattern } from './utils';
 import { Types } from 'mongoose';
 import { isNullOrUndefined } from 'util';
@@ -9,25 +9,37 @@ export function matchDate(value: string) {
     let fechas = value.split('|');
     if (fechas.length > 1) {
         query = {
-            $gte: moment(new Date(fechas[0])).toDate(),
-            $lte: moment(new Date(fechas[1])).toDate()
+            $gte: transformDate(fechas[0], true),
+            $lte: transformDate(fechas[1], false)
         };
     } else {
         if (value.substr(0, 2) === '>=') {
             fecha = value.substr(2);
-            query = { $gte: moment(new Date(fecha)).startOf('day').toDate() };
+            query = { $gte: transformDate(fecha, true) };
         } else if (value.substr(0, 1) === '>') {
             fecha = value.substr(1);
-            query = { $gt: moment(new Date(fecha)).startOf('day').toDate() };
+            query = { $gt: transformDate(fecha, true) };
         } else if (value.substr(0, 2) === '<=') {
             fecha = value.substr(2);
-            query = { $lte: moment(new Date(fecha)).startOf('day').toDate() };
+            query = { $lte: transformDate(fecha, true) };
         } else if (value.substr(0, 1) === '<') {
             fecha = value.substr(1);
-            query = { $lt: moment(new Date(fecha)).startOf('day').toDate() };
+            query = { $lt: transformDate(fecha, true) };
         }
     }
     return query;
+}
+
+export function transformDate(fecha: string, start: boolean) {
+    if (moment(fecha, 'YYYY-MM-DD', true).isValid()) {
+        if (start) {
+            return moment(fecha).startOf('day').toDate();
+        } else {
+            return moment(fecha).endOf('day').toDate();
+        }
+    } else {
+        return moment(fecha).toDate();
+    }
 }
 
 export function partialString(value: string) {
