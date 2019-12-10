@@ -1,5 +1,5 @@
 
-import { partialString } from './in-mongo';
+import { partialString, matchDate } from './in-mongo';
 
 describe('Query Builder', () => {
 
@@ -16,6 +16,14 @@ describe('Query Builder', () => {
     it('partialString: debe retornar null cuando el string es vacío', () => {
         const str = partialString('');
         expect(str).toBe('');
+    });
+
+    it('matchDate: debe retornar una expresion de comparacion de fechas', () => {
+        const str = matchDate('2019-01-01|2019-01-30');
+        expect(str).toMatchObject({
+            $gte: expect.any(Date),
+            $lte: expect.any(Date),
+        });
     });
 
 });
