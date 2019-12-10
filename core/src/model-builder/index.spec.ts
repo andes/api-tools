@@ -94,7 +94,8 @@ describe('ReouserBase searching', () => {
             active: Boolean,
             direccion: [
                 { tipo: String, calle: String }
-            ]
+            ],
+            fechaNacimiento: Date
         });
         PersonaModel = mongoose.model('personas_search', schema);
 
@@ -112,7 +113,8 @@ describe('ReouserBase searching', () => {
                 customField: {
                     field: 'direccion.calle',
                     fn: MongoQuery.partialString
-                }
+                },
+                fechaNacimiento: MongoQuery.matchDate
             };
         }
         personaResource = new Personas({});
@@ -121,9 +123,10 @@ describe('ReouserBase searching', () => {
             active: true,
             direccion: [
                 { tipo: 'laboral', calle: 'Santa Fe 670' }
-            ]
+            ],
+            fechaNacimiento: Date.now()
         }, {} as any);
-        await personaResource.create({ nombre: 'Miguel Perez', active: true }, {} as any);
+        await personaResource.create({ nombre: 'Miguel Perez', active: true, fechaNacimiento: new Date('1990-08-01') }, {} as any);
     });
 
     test('search exactly without result', async () => {
@@ -174,6 +177,11 @@ describe('ReouserBase searching', () => {
     test('searching with custom fields result', async () => {
         const search = await personaResource.search({ customField: '^santa' }, { fields: '-nombre' }, {} as any);
         expect(search[0].nombre).toBeUndefined();
+    });
+
+    test('searching matchDate', async () => {
+        const search = await personaResource.search({ fechaNacimiento: '2019-11-01|2019-12-20' }, {}, {} as any);
+        expect(search).toHaveLength(1);
     });
 });
 
