@@ -26,4 +26,31 @@ describe('Query Builder', () => {
         });
     });
 
+    it('matchDate: menor igual  ', () => {
+        const str = matchDate('<=2019-01-01');
+        expect(str).toMatchObject({
+            $lte: expect.any(Date),
+        });
+    });
+
+    it('matchDate: menor', () => {
+        const str = matchDate('<2019-01-01');
+        expect(str).toMatchObject({
+            $lt: expect.any(Date),
+        });
+    });
+
+    it('matchDate: mayor igual', () => {
+        const str = matchDate('>=2019-01-01');
+        expect(str).toMatchObject({
+            $gte: expect.any(Date),
+        });
+    });
+
+    it('matchDate: mayor', () => {
+        const str = matchDate('>2019-01-01');
+        expect(str).toMatchObject({
+            $gt: expect.any(Date),
+        });
+    });
 });
