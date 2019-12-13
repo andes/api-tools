@@ -124,9 +124,9 @@ describe('ReouserBase searching', () => {
             direccion: [
                 { tipo: 'laboral', calle: 'Santa Fe 670' }
             ],
-            fechaNacimiento: Date.now()
+            fechaNacimiento: new Date('1990-09-15 13:00:00')
         }, {} as any);
-        await personaResource.create({ nombre: 'Miguel Perez', active: true, fechaNacimiento: new Date('1990-08-01') }, {} as any);
+        await personaResource.create({ nombre: 'Miguel Perez', active: true, fechaNacimiento: new Date('1990-08-15 13:00:00') }, {} as any);
     });
 
     test('search exactly without result', async () => {
@@ -180,7 +180,32 @@ describe('ReouserBase searching', () => {
     });
 
     test('searching matchDate', async () => {
-        const search = await personaResource.search({ fechaNacimiento: '2019-11-01|2019-12-20' }, {}, {} as any);
+        const search = await personaResource.search({ fechaNacimiento: '1990-08-01|1990-08-31' }, {}, {} as any);
+        expect(search).toHaveLength(1);
+    });
+
+    test('searching matchDate', async () => {
+        const search = await personaResource.search({ fechaNacimiento: '1990-08-01|2019-12-20' }, {}, {} as any);
+        expect(search).toHaveLength(2);
+    });
+
+    test('searching matchDate: exact date without hour', async () => {
+        const search = await personaResource.search({ fechaNacimiento: '1990-08-15' }, {}, {} as any);
+        expect(search).toHaveLength(1);
+    });
+
+    test('searching matchDate: mayor a con hora', async () => {
+        const search = await personaResource.search({ fechaNacimiento: '>=1990-08-15T12:00:00' }, {}, {} as any);
+        expect(search).toHaveLength(2);
+    });
+
+    test('searching matchDate: menor a con hora', async () => {
+        const search = await personaResource.search({ fechaNacimiento: '<1990-08-15T12:00:00' }, {}, {} as any);
+        expect(search).toHaveLength(0);
+    });
+
+    test('searching matchDate: menor a con hora', async () => {
+        const search = await personaResource.search({ fechaNacimiento: '<1990-08-16T12:00:00' }, {}, {} as any);
         expect(search).toHaveLength(1);
     });
 });

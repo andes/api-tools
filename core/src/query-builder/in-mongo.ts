@@ -1,4 +1,4 @@
-import moment from 'moment';
+import * as moment from 'moment';
 import { makePattern } from './utils';
 import { Types } from 'mongoose';
 import { isNullOrUndefined } from 'util';
@@ -25,6 +25,11 @@ export function matchDate(value: string) {
         } else if (value.substr(0, 1) === '<') {
             fecha = value.substr(1);
             query = { $lt: transformDate(fecha, true) };
+        } else {
+            query = {
+                $gte: transformDate(value, true),
+                $lte: transformDate(value, false)
+            };
         }
     }
     return query;
