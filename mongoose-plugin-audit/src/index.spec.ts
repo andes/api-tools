@@ -52,6 +52,22 @@ test('should store createdAt field', async () => {
 
 });
 
+test('cant save without audit', async () => {
+    const schema = new mongoose.Schema({ documento: String });
+    schema.plugin(AuditPlugin);
+    const Model = mongoose.model('prueba33', schema);
+    const m = new Model({ documento: '1010' });
+
+    try {
+        await m.save();
+        expect(false).toBe(true);
+    } catch (err) {
+        const savedModel: any = await Model.findById(m._id);
+        expect(savedModel).toBeNull();
+    }
+
+});
+
 
 test('AuditDocument test', () => {
 
