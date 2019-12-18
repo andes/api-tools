@@ -113,29 +113,45 @@ export function queryArray(fieldName: string, values: any[], keyName: string, va
     return { $and: conds };
 }
 
+function processParam(fieldName: string, queryParam: any) {
+    const isFunction = typeof queryParam === 'function';
+
+    const callback = isFunction ? queryParam : queryParam.fn;
+    const field = isFunction ? fieldName : queryParam.field;
+
+    return [field, callback];
+}
 
 export function buildQuery(query: object, searchSpecification: object) {
     const mongoQuery = {};
     const $and: object[] = [];
-    Object.keys(query).forEach((fieldName) => {
-        if (isNullOrUndefined(searchSpecification[fieldName])) {
+
+    Object.keys(query).forEach((item) => {
+        if (isNullOrUndefined(searchSpecification[item])) {
             return;
         }
-
-        const queryParam = searchSpecification[fieldName];
-        const filterValue = query[fieldName];
-
-        const isFunction = typeof queryParam === 'function';
-
-        const callback = isFunction ? queryParam : queryParam.fn;
-        const field = isFunction ? fieldName : queryParam.field;
-
-        if (callback) {
-            const mongoFind = callback(filterValue, query);
-            if (!mongoFind['$and'] && !mongoFind['$or']) {
-                mongoQuery[field] = mongoFind;
+        const specification = searchSpecification[item];
+        const filterValue = query[item];
+        if (Array.isArray(specification)) {
+            const $or: any = {
+                $or: (specification as string[]).map(i => {
+                    const [field, callback] = processParam(i, searchSpecification[i]);
+                    const constrain = callback(filterValue, query);
+                    if (!constrain['$and'] && !constrain['$or']) {
+                        return { [field]: constrain };
+                    } else {
+                        return constrain;
+                    }
+                })
+            };
+            $and.push($or);
+        } else {
+            const [field, callback] = processParam(item, specification);
+            const constrain = callback(filterValue, query);
+            if (!constrain['$and'] && !constrain['$or']) {
+                mongoQuery[field] = constrain;
             } else {
-                $and.push(mongoFind);
+                $and.push(constrain);
             }
         }
     });

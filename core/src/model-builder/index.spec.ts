@@ -114,7 +114,8 @@ describe('ReouserBase searching', () => {
                     field: 'direccion.calle',
                     fn: MongoQuery.partialString
                 },
-                fechaNacimiento: MongoQuery.matchDate
+                fechaNacimiento: MongoQuery.matchDate,
+                search: ['nombre', 'laboral', 'customField']
             };
         }
         personaResource = new Personas({});
@@ -207,6 +208,24 @@ describe('ReouserBase searching', () => {
     test('searching matchDate: menor a con hora', async () => {
         const search = await personaResource.search({ fechaNacimiento: '<1990-08-16T12:00:00' }, {}, {} as any);
         expect(search).toHaveLength(1);
+    });
+
+    test('multisearch field', async () => {
+        const search = await personaResource.search({ search: '^santa' }, {}, {} as any);
+        expect(search).toHaveLength(1);
+
+        const search2 = await personaResource.search({ search: '^carlos' }, {}, {} as any);
+        expect(search2).toHaveLength(1);
+
+        const search3 = await personaResource.search({ search: 'Santa Fe 670' }, {}, {} as any);
+        expect(search3).toHaveLength(1);
+
+        const search4 = await personaResource.search({ search: 'Perez' }, {}, {} as any);
+        expect(search4).toHaveLength(0);
+
+        const search5 = await personaResource.search({ search: '^Perez' }, {}, {} as any);
+        expect(search5).toHaveLength(2);
+
     });
 });
 
