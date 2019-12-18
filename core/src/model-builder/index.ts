@@ -1,4 +1,4 @@
-import { Model as _Model, Types } from 'mongoose';
+import { Model as _Model, Types, Document } from 'mongoose';
 import { Request, Response, asyncHandler, IOptions, Router, NextFunction } from '@andes/api-tool';
 import { MongoQuery } from '../query-builder';
 
@@ -34,8 +34,8 @@ export interface RouteConfiguration {
  * [TODO] Simple searchFilter from schema type by default
  */
 
-export abstract class ResourceBase {
-    public abstract Model: _Model<any>;
+export abstract class ResourceBase<T extends Document = any> {
+    public abstract Model: _Model<T>;
 
     public keyId = '_id';
 
@@ -52,7 +52,8 @@ export abstract class ResourceBase {
 
     public eventBus: any = null;
 
-    constructor(args: any) {
+    constructor(args?: any) {
+        args = args || {};
         const { eventBus } = args;
         this.eventBus = eventBus;
     }
@@ -91,11 +92,11 @@ export abstract class ResourceBase {
         return checker(req);
     }
 
-    public async create(dto: any, req: Request) {
+    public async create(dto: any, req: Request): Promise<T> {
         dto = await this.populate(dto);
         const document = new this.Model(dto);
-        if (document.audit) {
-            document.audit(req);
+        if ((document as any).audit) {
+            (document as any).audit(req);
         }
 
         await document.save();
@@ -107,14 +108,14 @@ export abstract class ResourceBase {
         return document;
     }
 
-    public async update(id: ObjectId, data: any, req: Request) {
+    public async update(id: ObjectId, data: any, req: Request): Promise<T> {
         const document = await this.findById(id, {});
         if (document) {
             data = await this.populate(data);
             document.set(data);
 
-            if (document.audit) {
-                document.audit(req);
+            if ((document as any).audit) {
+                (document as any).audit(req);
             }
             const fieldsChange = document.modifiedPaths();
             await document.save();
@@ -229,14 +230,14 @@ export abstract class ResourceBase {
 }
 
 const routesFunctions = {
-    async search(this: ResourceBase, req: Request, res: Response) {
+    async search(this: ResourceBase<any>, req: Request, res: Response) {
         const options = req.apiOptions();
         const data = req.query;
         const plantillas = await this.search(data, options, req);
         return res.json(plantillas);
     },
 
-    async get(this: ResourceBase, req: Request, res: Response, next: NextFunction) {
+    async get(this: ResourceBase<any>, req: Request, res: Response, next: NextFunction) {
         const options = req.apiOptions();
         const id = req.params.id;
         const document = await this.findById(id, options);
@@ -247,7 +248,7 @@ const routesFunctions = {
         }
     },
 
-    async post(this: ResourceBase, req: Request, res: Response, next: NextFunction) {
+    async post(this: ResourceBase<any>, req: Request, res: Response, next: NextFunction) {
         const body = req.body;
         const document = await this.create(body, req);
         if (document) {
@@ -257,7 +258,7 @@ const routesFunctions = {
         }
     },
 
-    async patch(this: ResourceBase, req: Request, res: Response, next: NextFunction) {
+    async patch(this: ResourceBase<any>, req: Request, res: Response, next: NextFunction) {
         const id = req.params.id;
         const body = req.body;
         const document = await this.update(id, body, req);
@@ -268,7 +269,7 @@ const routesFunctions = {
         }
     },
 
-    async delete(this: ResourceBase, req: Request, res: Response, next: NextFunction) {
+    async delete(this: ResourceBase<any>, req: Request, res: Response, next: NextFunction) {
         const id = req.params.id;
         const document = await this.remove(id);
         if (document) {

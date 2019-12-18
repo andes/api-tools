@@ -6,6 +6,7 @@ import { ResourceBase } from './index';
 import { MongoQuery } from '../query-builder/in-mongo';
 import { apiOptionsMiddleware } from '@andes/api-tool';
 
+import { Document } from 'mongoose';
 
 const request = require('supertest');
 const express = require('express');
@@ -30,16 +31,21 @@ describe('ReouserBase basic operation', () => {
 
     beforeAll(async () => {
         const schema = new mongoose.Schema({ nombre: String, active: Boolean });
+        interface IPersona extends Document {
+            nombre: String;
+            active: Boolean;
+        }
         PersonaModel = mongoose.model('personas', schema);
 
-        class Personas extends ResourceBase {
+
+        class Personas extends ResourceBase<IPersona> {
             Model = PersonaModel;
             searchFileds = {
                 active: (b: any) => b,
                 nombre: (text: string) => new RegExp(`^${text}`)
             };
         }
-        personaResource = new Personas({});
+        personaResource = new Personas();
     });
 
 
@@ -238,7 +244,7 @@ describe('API - Test', () => {
         const schema = new mongoose.Schema({ nombre: String, active: Boolean });
         PersonaModel = mongoose.model('personas_api', schema);
 
-        class Personas extends ResourceBase {
+        class Personas extends ResourceBase<any> {
             Model = PersonaModel;
             resourceName = 'personas';
 
