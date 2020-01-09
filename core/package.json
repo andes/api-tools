@@ -17,8 +17,10 @@
   "dependencies": {
     "@andes/api-tool": "^1.0.0",
     "express": "^4.17.1",
+    "memory-cache": "^0.2.0",
     "moment": "^2.24.0",
-    "mongoose": "^5.6.11"
+    "mongoose": "^5.6.11",
+    "node-cache-redis": "^2.14.0"
   },
   "devDependencies": {
     "@types/express": "^4.17.1",
