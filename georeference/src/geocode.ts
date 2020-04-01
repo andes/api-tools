@@ -62,14 +62,13 @@ export async function geoReferenciar(direccion: string, API_KEY: string) {
     const req = {
         url: 'https://maps.googleapis.com/maps/api/geocode/json',
         qs: {
-            address: removeSpecialCharacter(direccion) + ', AR',
+            address: removeSpecialCharacter(direccion) + ',+AR',
             key: API_KEY
         },
         json: true
     };
-
     try {
-        const [, response] = await requestHttp(req);
+        const response: any = await requestHttp(req);
         if (response.status === 'OK') {
             const localidadBuscada = matchLocalidad(direccion);
             let coordenadas: Coordenadas;
