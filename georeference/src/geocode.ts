@@ -33,9 +33,9 @@ export async function autocompletarDireccion(texto: string, API_KEY: string) {
     };
 
     try {
-        const [status, response] = await requestHttp(req);
+        const [, response] = await requestHttp(req);
         if (response.status === 'OK') {
-            let predicciones = response.predictions.map(elem => elem.description);
+            let predicciones = response.predictions.map((elem: any) => elem.description);
             return predicciones;
         } else {
             return [];
@@ -69,12 +69,12 @@ export async function geoReferenciar(direccion: string, API_KEY: string) {
     };
 
     try {
-        const [status, response] = await requestHttp(req);
+        const [, response] = await requestHttp(req);
         if (response.status === 'OK') {
             const localidadBuscada = matchLocalidad(direccion);
             let coordenadas: Coordenadas;
             for (let elemento of response.results) {
-                let localidad = elemento.address_components.find(atributo => atributo.types[0] === 'locality');
+                let localidad = elemento.address_components.find((atributo: any) => atributo.types[0] === 'locality');
                 if (localidad) {
                     localidad = removeSpecialCharacter(localidad.short_name);
                     if (localidad.toUpperCase() === localidadBuscada.toUpperCase()) {

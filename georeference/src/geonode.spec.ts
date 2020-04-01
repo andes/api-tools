@@ -47,7 +47,7 @@ test('getBarrio success', async () => {
     const spyNode = jest
         .spyOn(geoNodeModule, 'geonode')
         .mockImplementation(() => res);
-    const response = await geoNodeModule.getBarrio(p1);
+    const response = await geoNodeModule.getBarrio(p1, 'host', 'andes', 'secret');
 
     spyNode.call(p1);
     expect(response).toEqual('BARRIO SUR');
@@ -60,12 +60,12 @@ test('getBarrio fail must return null', async () => {
         lat: -38.951643,
         lng: -68.059181
     };
-
-    const res = { features: [] };
+    const lista: any[] = [];
+    const res = { features: lista };
     const spyNode = jest
         .spyOn(geoNodeModule, 'geonode')
         .mockImplementation(() => res);
-    const response = await geoNodeModule.getBarrio(p1);
+    const response = await geoNodeModule.getBarrio(p1, 'host', 'andes', 'secret');
 
     spyNode.call(p1);
     expect(response).toEqual(null);

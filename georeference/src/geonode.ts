@@ -68,8 +68,8 @@ export const geonode = async (point: Coordenadas, host: string, user: string, pa
  * [TODO] esta funcion debería setar las opciones de geonode para solo consultar barrios
  */
 
-export async function getBarrio(point: Coordenadas) {
-    let response = await geonode(point);
+export async function getBarrio(point: Coordenadas, host: string, user: string, pass: string) {
+    let response = await geonode(point, host, user, pass);
     if (response && response.features.length) {
         return response.features[0].properties.NOMBRE;
     }
