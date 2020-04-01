@@ -15,6 +15,9 @@
       "@andes/mongoose-plugin-audit/*": [
         "./mongoose-plugin-audit/src"
       ],
+      "@andes/georeference/*": [
+        "./georeference/src"
+      ],
     }
   }
 }

@@ -1,0 +1,18 @@
+{
+  "extends": "../tsconfig.base.json",
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "build",
+    "declaration": true,
+    "target": "es2018",
+    "module": "commonjs",
+    "moduleResolution": "node"
+  },
+  "exclude": [
+    "build",
+    "node_modules",
+    "coverage",
+    "config",
+    "src/**/*.story.tsx"
+  ]
+}
