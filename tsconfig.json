@@ -18,6 +18,9 @@
       "@andes/georeference/*": [
         "./georeference/src"
       ],
+      "@andes/fuentes-autenticas/*": [
+        "./fuentes-autenticas/src"
+      ]
     }
   }
 }

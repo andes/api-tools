@@ -1,0 +1,34 @@
+{
+  "name": "@andes/fuentes-autenticas",
+  "version": "1.0.0",
+  "description": "",
+  "main": "build/index.js",
+  "module": "build/index.js",
+  "typings": "build/index.d.ts",
+  "scripts": {
+    "prepare": "tsc -p tsconfig.build.json",
+    "start": "tsc -p tsconfig.build.json -w",
+    "lint": "tslint --project tsconfig.build.json",
+    "test": "jest",
+    "prepublishOnly": "tsc -p tsconfig.build.json"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "node-fetch": "^2.6.0",
+    "soap": "^0.31.0",
+    "xmljson": "^0.2.0"
+  },
+  "devDependencies": {
+    "@types/bluebird": "^3.5.30",
+    "@types/jest": "^22.2.3",
+    "@types/node": "^10.0.0",
+    "jest": "^25.2.6",
+    "ts-jest": "^22.0.2",
+    "tslint": "^5.9.1",
+    "tslint-eslint-rules": "^5.4.0",
+    "tslint-react": "^3.4.0",
+    "typescript": "^3.0.0"
+  }
+}
