@@ -5,7 +5,8 @@
     "mongoose-plugin-audit",
     "api-tool",
     "core",
-    "georeference"
+    "georeference",
+    "fuentes-autenticas"
   ],
   "npmClient": "yarn",
   "useWorkspaces": true,
