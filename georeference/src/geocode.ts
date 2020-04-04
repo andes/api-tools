@@ -1,5 +1,6 @@
-import { requestHttp } from './request';
 import { Coordenadas } from './index';
+const fetch = require('node-fetch');
+const { URLSearchParams } = require('url');
 
 function removeSpecialCharacter(cadena: string) {
     cadena = cadena.replace(/ /g, '+');
@@ -20,22 +21,19 @@ function removeSpecialCharacter(cadena: string) {
  * @returns opciones
  */
 export async function autocompletarDireccion(texto: string, API_KEY: string) {
-    const req = {
-        url: 'https://maps.googleapis.com/maps/api/place/autocomplete/json',
-        qs: {
-            input: texto,
-            types: 'address',
-            components: 'country:ar',
-            language: 'es',
-            key: API_KEY
-        },
-        json: true
-    };
-
+    const url = 'https://maps.googleapis.com/maps/api/place/autocomplete/json';
+    const params = new URLSearchParams({
+        input: texto,
+        types: 'address',
+        components: 'country:ar',
+        language: 'es',
+        key: API_KEY
+    });
     try {
-        const [, response] = await requestHttp(req);
-        if (response.status === 'OK') {
-            let predicciones = response.predictions.map((elem: any) => elem.description);
+        const response = await fetch(url + params, { json: true });
+        if (response.status === 200) {
+            const body = await response.json();
+            let predicciones = body.predictions.map((elem: any) => elem.description);
             return predicciones;
         } else {
             return [];
@@ -59,20 +57,19 @@ function matchLocalidad(direccion: string) {
  * @returns coordenadas: { latitud, longitud } en caso de éxito. De lo contrario null.
  */
 export async function geoReferenciar(direccion: string, API_KEY: string) {
-    const req = {
-        url: 'https://maps.googleapis.com/maps/api/geocode/json',
-        qs: {
-            address: removeSpecialCharacter(direccion) + ',+AR',
-            key: API_KEY
-        },
-        json: true
-    };
+    const url = 'https://maps.googleapis.com/maps/api/geocode/json';
+    const params = new URLSearchParams({
+        address: removeSpecialCharacter(direccion) + ',+AR',
+        key: API_KEY
+    });
+    const options = { json: true };
     try {
-        const response: any = await requestHttp(req);
-        if (response.status === 'OK') {
+        const response: any = await fetch(url + params, options);
+        if (response.status === 200) {
+            const body = await response.json();
             const localidadBuscada = matchLocalidad(direccion);
             let coordenadas: Coordenadas;
-            for (let elemento of response.results) {
+            for (let elemento of body.results) {
                 let localidad = elemento.address_components.find((atributo: any) => atributo.types[0] === 'locality');
                 if (localidad) {
                     localidad = removeSpecialCharacter(localidad.short_name);

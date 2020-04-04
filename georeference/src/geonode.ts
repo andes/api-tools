@@ -1,6 +1,7 @@
 import * as proj4 from 'proj4';
-import { requestHttp } from './request';
 import { Coordenadas } from './index';
+const fetch = require('node-fetch');
+const { URLSearchParams } = require('url');
 
 
 // Se realiza la conversión de las coordenadas desde mercator a gauss-krüger mediante la lib 'proj4' (http://proj4js.org/)
@@ -15,16 +16,25 @@ proj4.defs('GAUSSKRUGGER', '+proj=tmerc +lat_0=-90 +lon_0=-69 +k=1 +x_0=2500000 
  * [TODO] Aprender la API de Geonode para mejorar la parametrización de esta funcion
  */
 
-export const geonode = async (point: Coordenadas, host: string, user: string, password: string): Promise<any> => {
+export async function geonode(point: Coordenadas, host: string, user: string, password: string) {
     if (point) {
         const geoRef = [Number(point.lng), Number(point.lat)];
         const geoRefGK = proj4('GOOGLE', 'GAUSSKRUGGER', geoRef); // geo-referencia en coordenadas gauss-krüger
         const geoBox = (geoRefGK[0] - 10) + ',' + (geoRefGK[1] - 10) + ',' + (geoRefGK[0] + 10) + ',' + (geoRefGK[1] + 10);
 
         const auth = Buffer.from(`${user}:${password}`).toString('base64');
-        const req = {
-            url: `${host}/geoserver/geonode/wms`,
-            qs: {
+        const options = {
+            json: true,
+            headers: {
+                'Content-Type': 'application/json',
+                Accept: 'application/json',
+                Authorization: `Basic ${auth}`,
+                timeout: '2L'
+            }
+        };
+
+        try {
+            const params = new URLSearchParams({
                 SERVICE: 'WMS',
                 VERSION: '1.1.1',
                 REQUEST: 'GetFeatureInfo',
@@ -42,30 +52,22 @@ export const geonode = async (point: Coordenadas, host: string, user: string, pa
                 WIDTH: '101',
                 HEIGHT: '101',
                 BBOX: geoBox
-            },
-            headers: {
-                Authorization: `Basic ${auth}`,
-                timeout: '2L'
-            },
-            json: true
-        };
-
-        try {
-            const [status, body] = await requestHttp(req);
-            if (status === 200) {
-                return body;
+            });
+            const response = await fetch(`${host}/geoserver/geonode/wms?` + params, options);
+            const respuesta = await response.json();
+            if (response.status === 200) {
+                return respuesta;
             }
             return null;
         } catch (error) {
             return null;
         }
     }
-};
+}
 
 
 /**
  * Dado un punto en el mapa devuelve el barrio correspondiente
- * [TODO] esta funcion debería setar las opciones de geonode para solo consultar barrios
  */
 
 export async function getBarrio(point: Coordenadas, host: string, user: string, pass: string) {
@@ -75,3 +77,4 @@ export async function getBarrio(point: Coordenadas, host: string, user: string, 
     }
     return null;
 }
+
