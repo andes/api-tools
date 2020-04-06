@@ -1,54 +1,6 @@
-import * as soap from 'soap';
 import { IPaciente, IDireccion, IUbicacion } from './IPaciente';
+import { soapRequest, RenaperConfig } from './soap-client';
 
-interface RenaperConfig {
-    url: string;
-    usuario: String;
-    password: String;
-    server: string;
-}
-
-async function soapRequest(persona: any, config: RenaperConfig) {
-    const sexo = persona.sexo === 'masculino' ? 'M' : 'F';
-    const documento = persona.documento;
-
-    const autenticationClient = await soap.createClientAsync(config.url);
-    if (autenticationClient) {
-        const credenciales = {
-            Usuario: config.usuario,
-            password: config.password
-        };
-        const [session] = await autenticationClient.LoginPecasAsync(credenciales);
-
-        if (session && session.return) {
-            const args = {
-                IdSesion: session.return['$value'],
-                Base: 'PecasAutorizacion'
-            };
-
-            await autenticationClient.FijarBaseDeSesionAsync(args);
-            const autorizationClient = await soap.createClientAsync(config.server);
-            const args2 = {
-                IdSesionPecas: session.return['$value'],
-                Cliente: 'ANDES SISTEMA',
-                Proveedor: 'GP-RENAPER',
-                Servicio: 'WS_RENAPER_documento',
-                DatoAuditado: `documento=${documento};sexo=${sexo}`,
-                Operador: 'andes',
-                Cuerpo: 'hola',
-                Firma: false,
-                CuerpoFirmado: false,
-                CuerpoEncriptado: false
-            };
-
-            const [respuesta] = await autorizationClient.Solicitar_ServicioAsync(args2);
-            if (respuesta && respuesta.return) {
-                return respuesta.return;
-            }
-        }
-    }
-    return null;
-}
 
 /**
  * Recupera los datos de una persona de renaper. Espera documento y sexo.
@@ -113,8 +65,11 @@ export function renaperToAndes(ciudadano: any) {
     return paciente;
 }
 
-
-export async function status(url: string) {
-    const autenticationClient = await soap.createClientAsync(url);
-    return autenticationClient ? true : false;
+export async function status(config: RenaperConfig) {
+    const persona = {
+        documento: '30643636',
+        sexo: 'femenino'
+    };
+    const soapResp = await soapRequest(persona, config);
+    return (soapResp.Resultado['$value'] ? true : false);
 }
