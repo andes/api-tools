@@ -4,7 +4,8 @@
     "event-bus",
     "mongoose-plugin-audit",
     "api-tool",
-    "core"
+    "core",
+    "georeference"
   ],
   "npmClient": "yarn",
   "useWorkspaces": true,

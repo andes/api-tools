@@ -1,0 +1,35 @@
+{
+  "name": "@andes/georeference",
+  "version": "1.0.0",
+  "description": "",
+  "main": "build/index.js",
+  "module": "build/index.js",
+  "typings": "build/index.d.ts",
+  "scripts": {
+    "prepare": "tsc -p tsconfig.build.json",
+    "start": "tsc -p tsconfig.build.json -w",
+    "lint": "tslint --project tsconfig.build.json",
+    "test": "jest",
+    "prepublishOnly": "tsc -p tsconfig.build.json"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "node-fetch": "^2.6.0",
+    "proj4": "^2.5.0"
+  },
+  "devDependencies": {
+    "@types/jest": "^22.1.1",
+    "@types/node": "^10.0.0",
+    "@types/node-fetch": "^2.5.5",
+    "@types/proj4": "^2.5.0",
+    "jest": "^22.1.4",
+    "jest-fetch-mock": "^3.0.3",
+    "ts-jest": "^22.4.6",
+    "tslint": "^5.9.1",
+    "tslint-eslint-rules": "^5.4.0",
+    "tslint-react": "^3.4.0",
+    "typescript": "^3.0.0"
+  }
+}
