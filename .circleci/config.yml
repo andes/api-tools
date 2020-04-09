@@ -23,6 +23,7 @@ jobs:
             touch .mongoose-plugin-audit-hash
             touch .api-tool-hash
             touch .core-hash
+            touch .georeference-hash
 
       - run:
           name: Hash projects
@@ -31,6 +32,7 @@ jobs:
             git log --pretty=format:'%H' -n 1 -- mongoose-plugin-audit > .mongoose-plugin-audit-hash.new
             git log --pretty=format:'%H' -n 1 -- api-tool > .api-tool-hash.new
             git log --pretty=format:'%H' -n 1 -- core > .core-hash.new
+            git log --pretty=format:'%H' -n 1 -- georeference > .georeference-hash.new
 
       - run:
           name: Determine changed projects
@@ -51,6 +53,10 @@ jobs:
               touch .project-metadata/.core-changed
             fi
 
+            if ! diff .reference-hash{,.new} > /dev/null; then
+              touch .project-metadata/.georeference-changed
+            fi
+
       - run:
           name: Set current project hashes
           command: |
@@ -58,6 +64,7 @@ jobs:
             mv .mongoose-plugin-audit-hash{.new,}
             mv .api-tool-hash{.new,}
             mv .core-hash{.new,}
+            mv .georeference-hash{.new,}
 
       - persist_to_workspace:
           root: .
@@ -68,6 +75,7 @@ jobs:
             - mongoose-plugin-audit/node_modules
             - api-tool/node_modules
             - core/node_modules
+            - georeference/node_modules
 
       - save_cache:
           key: v1-project-metadata-{{ .Branch }}-{{ epoch }}
@@ -76,6 +84,7 @@ jobs:
             - .mongoose-plugin-audit-hash
             - .api-tool-hash
             - .query-builder-hash
+            - .geofererence-hash
 
   bootstrap:
     <<: *defaults
@@ -90,8 +99,8 @@ jobs:
           name: Bootstrap via Lerna
           command: yarn bootstrap
       - run:
-          name: Lint commits messages
-          command: yarn run commitlint-circle
+          name: Commit lint
+          command: ./node_modules/.bin/commitlint --from origin/master --to ${CIRCLE_SHA1}
       - persist_to_workspace:
           root: .
           paths:
@@ -100,9 +109,8 @@ jobs:
             - mongoose-plugin-audit/node_modules
             - api-tool/node_modules
             - core/node_modules
- 
+            - georeference/node_modules
 
-      
   event-bus:
     <<: *defaults
     working_directory: ~/api-tools-builds
@@ -115,7 +123,7 @@ jobs:
             if [ -e .project-metadata/.event-bus-changed ]; then
               echo "let's do this"
             else
-              echo "nothing to do"
+              circleci step halt
             fi
       - run:
           name: Lint event-bus
@@ -124,7 +132,7 @@ jobs:
       - run:
           name: Test event-bus
           command: yarn test --scope=@andes/event-bus
-  
+
   mongoose-plugin-audit:
     <<: *defaults
     working_directory: ~/api-tools-builds
@@ -137,7 +145,7 @@ jobs:
             if [ -e .project-metadata/.mongoose-plugin-audit-changed ]; then
               echo "let's do this"
             else
-              echo "nothing to do"
+              circleci step halt
             fi
       - run:
           name: Lint mongoose-plugin-audit
@@ -159,7 +167,7 @@ jobs:
             if [ -e .project-metadata/.api-tool-changed ]; then
               echo "let's do this"
             else
-              echo "nothing to do"
+              circleci step halt
             fi
       - run:
           name: Lint api-tool
@@ -180,7 +188,7 @@ jobs:
             if [ -e .project-metadata/.core-changed ]; then
               echo "let's do this"
             else
-              echo "nothing to do"
+              circleci step halt
             fi
       - run:
           name: Lint core
@@ -189,7 +197,27 @@ jobs:
       - run:
           name: Test core
           command: yarn test --scope=@andes/core
+  georeference:
+    <<: *defaults
+    working_directory: ~/api-tools-builds
+    steps:
+      - checkout: { path: ~/api-tools-builds }
+      - attach_workspace: { at: . }
+      - run:
+          name: Check whether project changed
+          command: |
+            if [ -e .project-metadata/.georeference-changed ]; then
+              echo "let's do this"
+            else
+              circleci step halt
+            fi
+      - run:
+          name: Lint core
+          command: yarn run lint --scope=@andes/georeference
 
+      - run:
+          name: Test core
+          command: yarn test --scope=@andes/georeference
 workflows:
   version: 2
 
@@ -212,9 +240,12 @@ workflows:
       - api-tool:
           requires:
             - clone_and_hash
-            - bootstrap 
+            - bootstrap
       - core:
           requires:
             - clone_and_hash
-            - bootstrap 
-
+            - bootstrap
+      - georeference:
+          requires:
+            - clone_and_hash
+            - bootstrap
