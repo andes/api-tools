@@ -34,25 +34,22 @@ export function AuditPlugin(schema: mongoose.Schema) {
             return next(new Error('AUDIT PLUGIN ERROR: Inicialice el plugin utilizando el método audit(). Ejemplo: myModel.audit(req.user)'));
         }
         // Todo ok...
-        if (!self.esPacienteMpi) {
-            if (self.isNew) {
-                // Condición especial para que los pacientes que suben a MPI no se les modifique los datos de creación (usuario y fecha)
-                if (!self.createdAt) {
-                    self.createdAt = new Date();
-                    self.createdBy = user;
-                } else {
-                    self.updatedAt = new Date();
-                    self.updatedBy = user;
-                }
+
+        if (self.isNew) {
+            if (!self.createdAt) {
+                self.createdAt = new Date();
+                self.createdBy = user;
             } else {
-                if (self.isModified()) {
-                    self.updatedAt = new Date();
-                    self.updatedBy = user;
-                }
+                self.updatedAt = new Date();
+                self.updatedBy = user;
             }
         } else {
-            delete self.esPacienteMpi;
+            if (self.isModified()) {
+                self.updatedAt = new Date();
+                self.updatedBy = user;
+            }
         }
+
         next();
     });
 
