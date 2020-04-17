@@ -21,7 +21,7 @@ function removeSpecialCharacter(cadena: string) {
  * @returns opciones
  */
 export async function autocompletarDireccion(texto: string, API_KEY: string) {
-    const url = 'https://maps.googleapis.com/maps/api/place/autocomplete/json';
+    const url = 'https://maps.googleapis.com/maps/api/place/autocomplete/json?';
     const params = new URLSearchParams({
         input: texto,
         types: 'address',
@@ -57,7 +57,7 @@ function matchLocalidad(direccion: string) {
  * @returns coordenadas: { latitud, longitud } en caso de éxito. De lo contrario null.
  */
 export async function geoReferenciar(direccion: string, API_KEY: string) {
-    const url = 'https://maps.googleapis.com/maps/api/geocode/json';
+    const url = 'https://maps.googleapis.com/maps/api/geocode/json?';
     const params = new URLSearchParams({
         address: removeSpecialCharacter(direccion) + ',+AR',
         key: API_KEY
