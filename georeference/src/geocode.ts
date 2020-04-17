@@ -21,7 +21,7 @@ function removeSpecialCharacter(cadena: string) {
  * @returns opciones
  */
 export async function autocompletarDireccion(texto: string, API_KEY: string) {
-    const url = 'https://maps.googleapis.com/maps/api/place/autocomplete/json';
+    const url = 'https://maps.googleapis.com/maps/api/place/autocomplete/json?';
     const params = new URLSearchParams({
         input: texto,
         types: 'address',
