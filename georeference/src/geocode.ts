@@ -73,7 +73,7 @@ export async function geoReferenciar(direccion: string, API_KEY: string) {
                 let localidad = elemento.address_components.find((atributo: any) => atributo.types[0] === 'locality');
                 if (localidad) {
                     localidad = removeSpecialCharacter(localidad.short_name);
-                    if (localidad.toUpperCase() === localidadBuscada.toUpperCase()) {
+                    if (verificarCoordenada(localidad, localidadBuscada, elemento)) {
                         coordenadas = elemento.geometry.location;
                         break;
                     }
@@ -86,4 +86,9 @@ export async function geoReferenciar(direccion: string, API_KEY: string) {
     } catch (err) {
         return null;
     }
+}
+
+function verificarCoordenada(localidad: any, localidadBuscada: any, elemento: any) {
+    return (localidad.toUpperCase() === localidadBuscada.toUpperCase()) ||
+        ((elemento.types.length > 0) && elemento.types[0] === 'street_address');
 }
