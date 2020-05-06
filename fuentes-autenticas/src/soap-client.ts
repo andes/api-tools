@@ -8,7 +8,8 @@ export interface RenaperConfig {
 }
 
 export async function soapRequest(persona: any, config: RenaperConfig) {
-    const sexo = persona.sexo === 'masculino' ? 'M' : 'F';
+    let sexoPersona = ((typeof persona.sexo === 'string')) ? persona.sexo : (Object(persona.sexo).id);
+    const sexo = sexoPersona === 'masculino' ? 'M' : 'F';
     const documento = persona.documento;
 
     const autenticationClient = await soap.createClientAsync(config.url);

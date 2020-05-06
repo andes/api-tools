@@ -29,7 +29,8 @@ async function xmlToJson(xml: any) {
     Sexo: sexo
  */
 export async function sisa(persona: any, config: any, formatter: any = null) {
-    const sexo = persona.sexo === 'masculino' ? 'M' : 'F';
+    let sexoPersona = ((typeof persona.sexo === 'string')) ? persona.sexo : (Object(persona.sexo).id);
+    const sexo = sexoPersona === 'masculino' ? 'M' : 'F';
     const documento = persona.documento;
     const autenticacion = `usuario=${config.username}&clave=${config.password}`;
     const url = `${config.url}nrodoc=${documento}&sexo=${sexo}&${autenticacion}`;
