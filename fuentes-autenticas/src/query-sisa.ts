@@ -1,5 +1,5 @@
 // import { to_json } from 'xmljson';
-import { IPaciente, IDireccion, IUbicacion } from './IPaciente';
+import { IDireccion, IUbicacion } from './IPaciente';
 const fetch = require('node-fetch');
 const convert = require('xmljson');
 
@@ -49,33 +49,35 @@ export async function sisa(persona: any, config: any, formatter: any = null) {
  */
 
 export function sisaToAndes(ciudadano: any) {
-    let paciente: IPaciente;
+    let paciente: any = {};
     paciente.documento = ciudadano.nroDocumento || '';
     paciente.nombre = ciudadano.nombre || '';
     paciente.apellido = ciudadano.apellido || '';
 
     // Se arma un objeto de dirección
-    paciente.direccion = [];
-    let domicilio: IDireccion;
+    let ubicacion: IUbicacion = {
+        localidad: { nombre: ciudadano.localidad || '' },
+        provincia: { nombre: ciudadano.provincia || '' },
+        pais: { nombre: ciudadano.paisNacimiento || 'Argentina' }, // Ver el pais de la ubicación
+        barrio: null
+    };
 
-    domicilio.valor = ciudadano.domicilio ? (ciudadano.pisoDpto && ciudadano.pisoDpto !== '0 0' ? `${ciudadano.domicilio} ${ciudadano.pisoDpto}` : ciudadano.domicilio) : '';
-    domicilio.codigoPostal = ciudadano.codigoPostal || '';
+    let domicilio: IDireccion = {
+        valor: ciudadano.domicilio ? (ciudadano.pisoDpto && ciudadano.pisoDpto !== '0 0' ? `${ciudadano.domicilio} ${ciudadano.pisoDpto}` : ciudadano.domicilio) : '',
+        codigoPostal: ciudadano.codigoPostal || '',
+        ranking: 1,
+        activo: true,
+        ubicacion,
+        ultimaActualizacion: new Date()
+    };
 
-    let ubicacion: IUbicacion;
-    ubicacion.localidad.nombre = ciudadano.localidad || '';
-    ubicacion.provincia.nombre = ciudadano.provincia || '';
-
-    domicilio.ranking = 1;
-    domicilio.activo = true;
-    domicilio.ubicacion = ubicacion;
-    paciente.direccion.push(domicilio);
+    paciente.direccion = [domicilio];
     paciente.sexo = ciudadano.sexo && ciudadano.sexo === 'F' ? 'femenino' : 'masculino';
     paciente.genero = ciudadano.sexo && ciudadano.sexo === 'F' ? 'femenino' : 'masculino';
     const fecha = ciudadano.fechaNacimiento ? ciudadano.fechaNacimiento.split('-') : null;
     paciente.fechaNacimiento = (fecha && new Date(fecha[2].substr(0, 4), fecha[1] - 1, fecha[0]) || null);
     const fechaFallecido = ciudadano.fallecido !== 'NO' ? ciudadano.fechaFallecimiento.split('-') : null;
     paciente.fechaFallecimiento = fechaFallecido && new Date(fecha[2].substr(0, 4), fecha[1], fecha[0]) || null;
-
     paciente.identificadores = [{
         entidad: 'SISA',
         valor: ciudadano.codigoSISA
