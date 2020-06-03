@@ -12,10 +12,12 @@ export async function renaper(persona: any, config: RenaperConfig, formatter: (p
     if (soapResp && soapResp.Resultado['$value']) {
         const resultado = Buffer.from(soapResp.Resultado['$value'], 'base64').toString('utf8');
         const datos = JSON.parse(resultado);
-        return formatter ? formatter(datos) : datos;
-    } else {
-        return null;
+        if (datos && (datos.nombres !== '') && (datos.apellido !== '')) {
+            return formatter ? formatter(datos) : datos;
+        }
     }
+    return null;
+
 }
 
 /**
@@ -54,11 +56,11 @@ export function renaperToAndes(ciudadano: any) {
     paciente.sexo = ciudadano.sexo && ciudadano.sexo === 'F' ? 'femenino' : 'masculino';
     paciente.genero = ciudadano.sexo && ciudadano.sexo === 'F' ? 'femenino' : 'masculino';
     const fecha = ciudadano.fechaNacimiento ? ciudadano.fechaNacimiento.split('-') : null;
-    paciente.fechaNacimiento = (fecha && new Date(fecha[2].substr(0, 4), fecha[1] - 1, fecha[0]) || null);
-    const fechaFallecido = ciudadano.fallecido !== 'NO' ? ciudadano.fechaFallecimiento.split('-') : null;
-    paciente.fechaFallecimiento = fechaFallecido && new Date(fecha[2].substr(0, 4), fecha[1], fecha[0]) || null;
-
+    paciente.fechaNacimiento = (fecha && new Date(fecha[0], fecha[1] - 1, fecha[2]) || null);
+    const fechaFallecido = ciudadano.fallecido && ciudadano.fallecido !== 'NO' ? ciudadano.fechaFallecimiento.split('-') : null;
+    paciente.fechaFallecimiento = fechaFallecido && new Date(fecha[0], fecha[1] - 1, fecha[2]) || null;
     paciente.foto = ciudadano.foto;
+    paciente.estado = 'validado';
     paciente.identificadores = [{
         entidad: 'RENAPER',
         valor: ciudadano.idciudadano
