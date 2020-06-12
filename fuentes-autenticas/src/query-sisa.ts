@@ -76,7 +76,7 @@ export function sisaToAndes(ciudadano: any) {
     paciente.genero = ciudadano.sexo && ciudadano.sexo === 'F' ? 'femenino' : 'masculino';
     const fecha = ciudadano.fechaNacimiento ? ciudadano.fechaNacimiento.split('-') : null;
     paciente.fechaNacimiento = (fecha && new Date(fecha[2].substr(0, 4), fecha[1] - 1, fecha[0]) || null);
-    const fechaFallecido = ciudadano.fallecido !== 'NO' ? ciudadano.fechaFallecimiento.split('-') : null;
+    const fechaFallecido = (ciudadano.fallecido !== 'NO' && ciudadano.fechaFallecido) ? ciudadano.fechaFallecido.split('-') : null;
     paciente.fechaFallecimiento = fechaFallecido && new Date(fecha[2].substr(0, 4), fecha[1], fecha[0]) || null;
     paciente.estado = 'validado';
     paciente.identificadores = [{
