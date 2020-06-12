@@ -13,6 +13,8 @@ export async function renaper(persona: any, config: RenaperConfig, formatter: (p
         const resultado = Buffer.from(soapResp.Resultado['$value'], 'base64').toString('utf8');
         const datos = JSON.parse(resultado);
         if (datos && (datos.nombres !== '') && (datos.apellido !== '')) {
+            datos.documento = persona.documento;
+            datos.sexo = persona.sexo;
             return formatter ? formatter(datos) : datos;
         }
     }
@@ -25,6 +27,7 @@ export async function renaper(persona: any, config: RenaperConfig, formatter: (p
  */
 export function renaperToAndes(ciudadano: any) {
     let paciente: any = {};
+    paciente.documento = ciudadano.documento || '';
     paciente.nombre = ciudadano.nombres || '';
     paciente.apellido = ciudadano.apellido || '';
     paciente.cuil = ciudadano.cuil || '';
@@ -53,8 +56,8 @@ export function renaperToAndes(ciudadano: any) {
     }
 
     paciente.direccion = [domicilio];
-    paciente.sexo = ciudadano.sexo && ciudadano.sexo === 'F' ? 'femenino' : 'masculino';
-    paciente.genero = ciudadano.sexo && ciudadano.sexo === 'F' ? 'femenino' : 'masculino';
+    paciente.sexo = ciudadano.sexo || '';
+    paciente.genero = ciudadano.sexo || '';
     const fecha = ciudadano.fechaNacimiento ? ciudadano.fechaNacimiento.split('-') : null;
     paciente.fechaNacimiento = (fecha && new Date(fecha[0], fecha[1] - 1, fecha[2]) || null);
     const fechaFallecido = ciudadano.fallecido && ciudadano.fallecido !== 'NO' ? ciudadano.fechaFallecimiento.split('-') : null;
