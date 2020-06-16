@@ -61,7 +61,7 @@ export function renaperToAndes(ciudadano: any) {
     const fecha = ciudadano.fechaNacimiento ? ciudadano.fechaNacimiento.split('-') : null;
     paciente.fechaNacimiento = (fecha && new Date(fecha[0], fecha[1] - 1, fecha[2]) || null);
     const fechaFallecido = ciudadano.fallecido && ciudadano.fallecido !== 'NO' ? ciudadano.fechaFallecimiento.split('-') : null;
-    paciente.fechaFallecimiento = fechaFallecido && new Date(fecha[0], fecha[1] - 1, fecha[2]) || null;
+    paciente.fechaFallecimiento = fechaFallecido && new Date(fechaFallecido[0], fechaFallecido[1] - 1, fechaFallecido[2]) || null;
     paciente.foto = ciudadano.foto;
     paciente.estado = 'validado';
     paciente.identificadores = [{
