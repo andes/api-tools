@@ -5,9 +5,9 @@ import { Request as ERequest, Response as EResponse, Router, NextFunction } from
 
 export function apiOptions(req: ERequest): IOptions {
     const options: IOptions = {};
-    options.fields = req.query.fields;
-    options.limit = req.query.limit ? parseInt(req.query.limit, 10) : null;
-    options.skip = req.query.skip ? parseInt(req.query.skip, 10) : null;
+    options.fields = req.query.fields as string;
+    options.limit = req.query.limit ? parseInt(req.query.limit as string, 10) : null;
+    options.skip = req.query.skip ? parseInt(req.query.skip as string, 10) : null;
     return options;
 }
 
