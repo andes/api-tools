@@ -150,7 +150,7 @@ export abstract class ResourceBase<T extends Document = any> {
     public async search(data: any, options: IOptions, req: Request) {
         const preconditions = await this.presearch(data, req);
         const conditions = MongoQuery.buildQuery(data, this.searchFileds);
-        const { fields, skip, limit } = options;
+        const { fields, skip, limit, sort } = options;
         let query = this.Model.find({
             ...preconditions,
             ...conditions
@@ -164,6 +164,9 @@ export abstract class ResourceBase<T extends Document = any> {
         }
         if (skip) {
             query.skip(skip);
+        }
+        if (sort) {
+            query.sort(sort);
         }
 
         return await this.Model.find(query);
