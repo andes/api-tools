@@ -17,3 +17,19 @@ test('test without query', () => {
     expect(fields).toBe(undefined);
     expect(sort).toBe(undefined);
 });
+
+test('test sort', () => {
+    const { limit, skip, fields, sort } = apiOptions({ query: { skip: 50, sort: 'nombre' } } as any);
+    expect(limit).toBe(null);
+    expect(skip).toBe(50);
+    expect(fields).toBe(undefined);
+    expect(sort).toBe('nombre');
+});
+
+test('test fields', () => {
+    const { limit, skip, fields, sort } = apiOptions({ query: { skip: 50, sort: 'nombre' } } as any);
+    expect(limit).toBe(null);
+    expect(skip).toBe(50);
+    expect(fields).toBe(undefined);
+    expect(sort).toBe('nombre');
+});
