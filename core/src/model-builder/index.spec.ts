@@ -233,6 +233,18 @@ describe('ReouserBase searching', () => {
         expect(search5).toHaveLength(2);
 
     });
+
+    test('sort by fechaNacimiento ASC', async () => {
+        const search = await personaResource.search({}, { sort: 'fechaNacimiento' }, {} as any);
+        expect(search).toHaveLength(2);
+        expect(search[0].nombre).toBe('Miguel Perez');
+    });
+
+    test('sort by fechaNacimiento DESC', async () => {
+        const search = await personaResource.search({}, { sort: '-fechaNacimiento' }, {} as any);
+        expect(search).toHaveLength(2);
+        expect(search[0].nombre).toBe('Carlos Perez');
+    });
 });
 
 
@@ -331,6 +343,28 @@ describe('API - Test', () => {
             .then((response: any) => {
                 expect(response.body).toHaveLength(1);
 
+            });
+    });
+
+    it('sorting api ASC', async () => {
+        return request(app)
+            .get('/api/personas?sort=active')
+            .set('Accept', 'application/json')
+            .expect(200)
+            .then((response: any) => {
+                expect(response.body).toHaveLength(3);
+                expect(response.body[0].nombre).toBe('Juan');
+            });
+    });
+
+    it('sorting api DESC', async () => {
+        return request(app)
+            .get('/api/personas?sort=-active')
+            .set('Accept', 'application/json')
+            .expect(200)
+            .then((response: any) => {
+                expect(response.body).toHaveLength(3);
+                expect(response.body[0].nombre).toBe('Perez Jorge');
             });
     });
 
