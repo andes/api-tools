@@ -25,7 +25,7 @@ afterAll(async () => {
     await mongoServer.stop();
 });
 
-describe('ReouserBase basic operation', () => {
+describe('ResourceBase basic operation', () => {
     let PersonaModel: any;
     let personaResource: any;
 
@@ -66,6 +66,11 @@ describe('ReouserBase basic operation', () => {
         expect(m3.nombre).toBeUndefined();
     });
 
+    test('findOne with partial match', async () => {
+        const search = await personaResource.findOne({ nombre: '^Perez' }, {}, {} as any);
+        expect(search).toHaveLength(1);
+    });
+
     test('search string exactly', async () => {
         let search = await personaResource.search({ nombre: 'Carlos' }, {}, {} as any);
         expect(search).toHaveLength(1);
@@ -90,7 +95,7 @@ describe('ReouserBase basic operation', () => {
     });
 });
 
-describe('ReouserBase searching', () => {
+describe('ResourceBase searching', () => {
     let PersonaModel: any;
     let personaResource: any;
 

@@ -172,6 +172,15 @@ export abstract class ResourceBase<T extends Document = any> {
         return await this.Model.find(query);
     }
 
+    public async findOne(data: any, options: IOptions, req: Request) {
+        options.limit = 1;
+        const documents = await this.search(data, options, req);
+        if (documents.length > 0) {
+            return documents[0];
+        }
+        return null;
+    }
+
     public async findById(id: ObjectId | any, options: IOptions) {
         const { fields } = options;
         const conditions = {};
