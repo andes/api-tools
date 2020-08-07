@@ -21,7 +21,7 @@ export type AuditTypes = {
     updatedAt?: Date;
 };
 
-export type AndesDoc<T> = T & Document;
+export type AndesDoc<T> = T & mongoose.Document;
 export type AndesDocWithAudit<T> = AndesDoc<T> & AuditTypes;
 
 // Plugin para configurar auditoría
