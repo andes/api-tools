@@ -1,5 +1,26 @@
 import * as mongoose from 'mongoose';
 
+export interface CreatedBy {
+    organizacion: {
+        id: string;
+        nombre: string;
+    };
+    documento: string;
+    username: string;
+    apellido: string;
+    nombre: string;
+    nombreCompleto: string;
+}
+export type UpdatedBy = CreatedBy;
+
+export type AuditTypes = {
+    audit(user: any): void;
+    createdBy: CreatedBy;
+    createdAt: Date;
+    updatedBy?: UpdatedBy;
+    updatedAt?: Date;
+};
+
 // Plugin para configurar auditoría
 export function AuditPlugin(schema: mongoose.Schema) {
     schema.add({
