@@ -154,7 +154,8 @@ export abstract class ResourceBase<T extends Document = any> {
     public async search(data: any, options: IOptions = {}, req: Request = null) {
         const preconditions = await this.presearch(data, req);
         const conditions = MongoQuery.buildQuery(data, this.searchFileds);
-        const { fields, skip, limit, sort } = options || {};
+        options = options || {};
+        const { fields, skip, limit, sort } = options;
         let query = this.Model.find({
             ...preconditions,
             ...conditions
@@ -186,7 +187,8 @@ export abstract class ResourceBase<T extends Document = any> {
     }
 
     public findById(id: ObjectId | any, options: IOptions = null) {
-        const { fields } = options || {};
+        options = options || {};
+        const { fields } = options;
         const conditions = {};
         conditions[this.keyId] = id;
         const query = this.Model.findOne(conditions);
