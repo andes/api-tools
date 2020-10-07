@@ -34,6 +34,9 @@ export function matchDate(value: string) {
     }
     return query;
 }
+matchDate.withField = (field: string) => {
+    return { field, fn: matchDate };
+};
 
 export function transformDate(fecha: string, start: boolean) {
     if (moment(fecha, 'YYYY-MM-DD', true).isValid()) {
@@ -55,13 +58,42 @@ export function partialString(value: string) {
     return value;
 }
 
+partialString.withField = (field: string) => {
+    return { field, fn: partialString };
+};
+
 export function matchString(value: string) {
     return value;
 }
 
+matchString.withField = (field: string) => {
+    return { field, fn: matchString };
+};
+
 export function equalMatch(value: string | boolean | number) {
     return value;
 }
+
+equalMatch.withField = (field: string) => {
+    return { field, fn: equalMatch };
+};
+
+export function inArray(value: any | any[]) {
+    const v = Array.isArray(value) ? value : [value];
+    return { $in: v };
+}
+
+inArray.withField = (field: string) => {
+    return { field, fn: inArray };
+};
+
+export function equalOrNull(value: any | any[]) {
+    return { $in: [null, value] };
+}
+
+equalOrNull.withField = (field: string) => {
+    return { field, fn: equalOrNull };
+};
 
 /**
  * Devuelve una query con elemMatch por keyName y valueName
@@ -168,5 +200,7 @@ export const MongoQuery = {
     matchString,
     queryMatch,
     queryArray,
-    buildQuery
+    buildQuery,
+    inArray,
+    equalOrNull
 };

@@ -34,6 +34,10 @@ export interface RouteConfiguration {
  * [TODO] Simple searchFilter from schema type by default
  */
 
+export type SearchFieldsType = {
+    [key: string]: ((value: any) => any) | { field: string, fn: (value: any) => any } | string[];
+} & { search?: string[] };
+
 export abstract class ResourceBase<T extends Document = any> {
     public abstract Model: _Model<T>;
 
@@ -41,7 +45,7 @@ export abstract class ResourceBase<T extends Document = any> {
 
     public resourceModule = '';
     public resourceName = '';
-    public searchFileds: object = {};
+    public searchFileds: SearchFieldsType = {};
 
     public routesEnable = ['get', 'search', 'post', 'patch', 'delete'];
 
@@ -147,10 +151,10 @@ export abstract class ResourceBase<T extends Document = any> {
         return {};
     }
 
-    public async search(data: any, options: IOptions, req: Request) {
+    public async search(data: any, options: IOptions = {}, req: Request = null) {
         const preconditions = await this.presearch(data, req);
         const conditions = MongoQuery.buildQuery(data, this.searchFileds);
-        const { fields, skip, limit, sort } = options;
+        const { fields, skip, limit, sort } = options || {};
         let query = this.Model.find({
             ...preconditions,
             ...conditions
@@ -172,7 +176,7 @@ export abstract class ResourceBase<T extends Document = any> {
         return await this.Model.find(query);
     }
 
-    public async findOne(data: any, options: IOptions, req: Request) {
+    public async findOne(data: any, options: IOptions = {}, req: Request = null) {
         options.limit = 1;
         const documents = await this.search(data, options, req);
         if (documents.length > 0) {
@@ -181,15 +185,15 @@ export abstract class ResourceBase<T extends Document = any> {
         return null;
     }
 
-    public async findById(id: ObjectId | any, options: IOptions) {
-        const { fields } = options;
+    public findById(id: ObjectId | any, options: IOptions = null) {
+        const { fields } = options || {};
         const conditions = {};
         conditions[this.keyId] = id;
         const query = this.Model.findOne(conditions);
         if (fields) {
             query.select(fields);
         }
-        return await query;
+        return query;
     }
 
 

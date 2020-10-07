@@ -7,6 +7,7 @@ import { MongoQuery } from '../query-builder/in-mongo';
 import { apiOptionsMiddleware } from '@andes/api-tool';
 
 import { Document } from 'mongoose';
+import { fn } from 'moment';
 
 const request = require('supertest');
 const express = require('express');
@@ -67,8 +68,8 @@ describe('ResourceBase basic operation', () => {
     });
 
     test('findOne with partial match', async () => {
-        const search = await personaResource.findOne({ nombre: '^Perez' }, {}, {} as any);
-        expect(search).toHaveLength(1);
+        const search = await personaResource.findOne({ nombre: 'Carlos' }, {}, {} as any);
+        expect(search.nombre).toBe('Carlos Perez');
     });
 
     test('search string exactly', async () => {
@@ -121,11 +122,13 @@ describe('ResourceBase searching', () => {
                 direccion: (value: any) => {
                     return MongoQuery.queryArray('direccion', value, 'tipo', 'calle');
                 },
-                customField: {
-                    field: 'direccion.calle',
-                    fn: MongoQuery.partialString
-                },
+                customField: MongoQuery.partialString.withField('direccion.calle'),
                 fechaNacimiento: MongoQuery.matchDate,
+
+                // Estos campos son para el test, no son nombres reales
+                nombreIn: MongoQuery.inArray.withField('nombre'),
+                direccionEqualOrNull: MongoQuery.equalOrNull.withField('test'),
+
                 search: ['nombre', 'laboral', 'customField']
             };
         }
@@ -220,6 +223,22 @@ describe('ResourceBase searching', () => {
         const search = await personaResource.search({ fechaNacimiento: '<1990-08-16T12:00:00' }, {}, {} as any);
         expect(search).toHaveLength(1);
     });
+
+    test('in array', async () => {
+        const search = await personaResource.search({ nombreIn: 'Carlos Perez' }, {}, {} as any);
+        expect(search).toHaveLength(1);
+    });
+
+    test('in array', async () => {
+        const search = await personaResource.search({ nombreIn: ['Carlos Perez', 'dos'] }, {}, {} as any);
+        expect(search).toHaveLength(1);
+    });
+
+    test('in array', async () => {
+        const search = await personaResource.search({ direccionEqualOrNull: 'laboral' }, {}, {} as any);
+        expect(search).toHaveLength(2);
+    });
+
 
     test('multisearch field', async () => {
         const search = await personaResource.search({ search: '^santa' }, {}, {} as any);
