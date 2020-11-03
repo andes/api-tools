@@ -30,10 +30,17 @@ export class AndesCache {
         if (this.adapter === 'memory') {
             this.memoryCache = new MemoryCache.Cache();
         } else {
-            this.redisCache = new RedisCache({ name: this.name, redisOptions: { host: this.host, port: this.port } });
+            this.redisCache = new RedisCache({
+                name: this.name,
+                redisOptions: {
+                    host: this.host,
+                    port: this.port,
+                    enable_offline_queue: false
+                }
+            });
+
         }
     }
-
 
     private genKey(key: string) {
         return `${this.name}-${key}`;
@@ -50,7 +57,7 @@ export class AndesCache {
                 });
             });
         } else {
-            return this.redisCache.set(genKey, value, ttl);
+            return this.redisCache.set(genKey, value, ttl).catch(() => null as any);
         }
     }
 
@@ -60,7 +67,7 @@ export class AndesCache {
             const value = this.memoryCache.get(genKey);
             return Promise.resolve(value);
         } else {
-            return this.redisCache.get(genKey);
+            return this.redisCache.get(genKey).catch(() => null as any);
         }
     }
 
@@ -70,7 +77,7 @@ export class AndesCache {
             const result = this.memoryCache.del(genKey);
             return Promise.resolve(result);
         } else {
-            return this.redisCache.del(genKey);
+            return this.redisCache.del(genKey).catch(() => null as any);
         }
     }
 
