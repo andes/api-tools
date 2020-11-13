@@ -103,6 +103,7 @@ describe('ResourceBase searching', () => {
     beforeAll(async () => {
         const schema = new mongoose.Schema({
             nombre: String,
+            apellido: String,
             active: Boolean,
             direccion: [
                 { tipo: String, calle: String }
@@ -116,6 +117,7 @@ describe('ResourceBase searching', () => {
             searchFileds = {
                 active: MongoQuery.equalMatch,
                 nombre: MongoQuery.partialString,
+                apellido: MongoQuery.equalMatch,
                 laboral: (value: string) => {
                     return MongoQuery.queryArray('direccion', [`laboral|${value}`], 'tipo', 'calle');
                 },
@@ -135,18 +137,29 @@ describe('ResourceBase searching', () => {
         personaResource = new Personas({});
         await personaResource.create({
             nombre: 'Carlos Perez',
+            apellido: 'Martin',
             active: true,
             direccion: [
                 { tipo: 'laboral', calle: 'Santa Fe 670' }
             ],
             fechaNacimiento: new Date('1990-09-15 13:00:00')
         }, {} as any);
-        await personaResource.create({ nombre: 'Miguel Perez', active: true, fechaNacimiento: new Date('1990-08-15 13:00:00') }, {} as any);
+        await personaResource.create({ nombre: 'Miguel Perez', apellido: 'Garcia', active: true, fechaNacimiento: new Date('1990-08-15 13:00:00') }, {} as any);
     });
 
     test('search exactly without result', async () => {
         const search = await personaResource.search({ nombre: 'Carlos' }, {}, {} as any);
         expect(search).toHaveLength(0);
+    });
+
+    test('search not equal with one result', async () => {
+        const search = await personaResource.search({ apellido: '~Garcia' }, {}, {} as any);
+        expect(search).toHaveLength(1);
+    });
+
+    test('search not equal with two results', async () => {
+        const search = await personaResource.search({ apellido: '~Pepito' }, {}, {} as any);
+        expect(search).toHaveLength(2);
     });
 
     test('searching exactly', async () => {
