@@ -71,6 +71,11 @@ matchString.withField = (field: string) => {
 };
 
 export function equalMatch(value: string | boolean | number) {
+    if (typeof value === 'string') {
+        if (value && value.charAt(0) === '~') {
+            return { $ne: value.substring(1) };
+        }
+    }
     return value;
 }
 
