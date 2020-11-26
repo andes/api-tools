@@ -1,6 +1,10 @@
 
-import { renaper, status } from './query-renaper';
+import { renaper, renaperv2, status } from './query-renaper';
 import * as soapConn from './soap-client';
+const fetch = require('node-fetch');
+const { Response } = jest.requireActual('node-fetch');
+
+jest.mock('node-fetch');
 
 
 describe('service renaper basic query', () => {
@@ -40,6 +44,37 @@ describe('service renaper basic query', () => {
         expect(ciudadano.apellido).toBe('ANDES');
         spySoap.mockReset();
 
+    });
+
+    test('renaper v2 query success', async () => {
+        const config = {
+            securityServer: 'http://prueba',
+            client:
+            {
+                xRoadInstance: 'roksnet',
+                memberClass: 'GOV',
+                memberCode: '70000000',
+                subsystemCode: 'GP-SALUD'
+            }
+        };
+        const respuesta = {
+            ID_TRAMITE_PRINCIPAL: 454550023,
+            ID_TRAMITE_TARJETA_REIMPRESA: 0,
+            EJEMPLAR: 'C',
+            VENCIMIENTO: '02/09/2031',
+            EMISION: '02/09/2016',
+            apellido: 'ANDES',
+            nombres: 'TEST',
+            fechaNacimiento: '1990-09-21',
+            cuil: '',
+            calle: 'Prueba',
+            numero: '985',
+            piso: '5'
+        };
+        fetch.mockReturnValue(Promise.resolve(new Response(JSON.stringify(respuesta))));
+        await renaperv2({ documento: '32588311', sexo: 'M' }, config);
+        expect(fetch).toHaveBeenCalled();
+        expect(fetch.mock.calls).toMatchSnapshot();
     });
 
     test('renaper query not found', async () => {
