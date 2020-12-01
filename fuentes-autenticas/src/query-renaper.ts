@@ -40,6 +40,7 @@ export interface XRoadConfig {
 }
 
 export async function renaperv2(persona: any, config: XRoadConfig, formatter: (persona: any) => any = null) {
+    const sexo = persona.sexo === 'masculino' ? 'M' : 'F';
     const url = `${config.securityServer}/r1/roksnet/GOV/71111229/GP-RENAPER/WS_Renaper_Documento_3/${persona.documento}/${persona.sexo}`;
     const headers = {
         'Content-type': 'application/json',
@@ -55,10 +56,47 @@ export async function renaperv2(persona: any, config: XRoadConfig, formatter: (p
         const datos = body.resultado1;
         if (datos && (datos.nombres !== '') && (datos.apellido !== '')) {
             datos.documento = persona.documento;
-            datos.sexo = persona.sexo;
+            datos.sexo = sexo;
             return formatter ? formatter(datos) : datos;
         }
         return null;
+    } catch (err) {
+        return null;
+    }
+
+}
+
+export interface BusConfig {
+    host: string;
+    usuario: string;
+    clave: string;
+    dominio: string;
+}
+
+export async function renaperv3(persona: any, config: BusConfig, formatter: (persona: any) => any = null) {
+    const idSexo = persona.sexo === 'masculino' ? 2 : 1;
+
+    // Se obtiene el token
+    const token = await getToken(config.host, config.usuario, config.clave, config.dominio);
+    const url = `${config.host}/personas/renaper?nroDocumento=${persona.documento}&idSexo=${idSexo.toString()}`;
+    try {
+        if (token) {
+            const headers = {
+                token,
+                codDominio: config.dominio
+            };
+            const response = await fetch(url, {
+                method: 'GET',
+                headers
+            });
+            const datos = await response.json();
+            if (datos && (datos.nombres !== '') && (datos.apellido !== '')) {
+                datos.documento = persona.documento;
+                datos.sexo = persona.sexo;
+                return formatter ? formatter(datos) : datos;
+            }
+            return null;
+        }
     } catch (err) {
         return null;
     }
@@ -121,4 +159,28 @@ export async function status(config: RenaperConfig) {
     };
     const soapResp = await soapRequest(persona, config);
     return (soapResp && soapResp.Resultado['$value'] ? true : false);
+}
+
+export async function getToken(host: string, usuario: string, pass: string, dominio: string) {
+    const url = `${host}/usuarios/aplicacion/login`;
+    const formData = JSON.stringify({
+        nombre: usuario,
+        clave: pass,
+        codDominio: dominio
+    });
+    const options = {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json'
+        },
+        body: formData,
+        json: true,
+    };
+    const response = await fetch(
+        url,
+        options
+    );
+    const datos = await response.json();
+    return datos.token || null;
 }

@@ -1,5 +1,5 @@
 
-import { renaper, renaperv2, status } from './query-renaper';
+import { renaper, renaperv2, renaperv3, status } from './query-renaper';
 import * as soapConn from './soap-client';
 const fetch = require('node-fetch');
 const { Response } = jest.requireActual('node-fetch');
@@ -73,6 +73,33 @@ describe('service renaper basic query', () => {
         };
         fetch.mockReturnValue(Promise.resolve(new Response(JSON.stringify(respuesta))));
         await renaperv2({ documento: '32588311', sexo: 'M' }, config);
+        expect(fetch).toHaveBeenCalled();
+        expect(fetch.mock.calls).toMatchSnapshot();
+    });
+
+    test('renaper v3 query success', async () => {
+        const config = {
+            host: 'https://federador.msal.gob.ar',
+            usuario: 'user',
+            clave: 'pass',
+            dominio: 'dominio'
+        };
+        const respuesta = {
+            ID_TRAMITE_PRINCIPAL: 454550023,
+            ID_TRAMITE_TARJETA_REIMPRESA: 0,
+            EJEMPLAR: 'C',
+            VENCIMIENTO: '02/09/2031',
+            EMISION: '02/09/2016',
+            apellido: 'ANDES',
+            nombres: 'TEST',
+            fechaNacimiento: '1990-09-21',
+            cuil: '',
+            calle: 'Prueba',
+            numero: '985',
+            piso: '5'
+        };
+        fetch.mockReturnValue(Promise.resolve(new Response(JSON.stringify(respuesta))));
+        await renaperv3({ documento: '32588311', sexo: 'masculino' }, config);
         expect(fetch).toHaveBeenCalled();
         expect(fetch.mock.calls).toMatchSnapshot();
     });
