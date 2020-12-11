@@ -75,6 +75,7 @@ describe('service renaper basic query', () => {
         await renaperv2({ documento: '32588311', sexo: 'M' }, config);
         expect(fetch).toHaveBeenCalled();
         expect(fetch.mock.calls).toMatchSnapshot();
+        fetch.mockReset();
     });
 
     test('renaper v3 query success', async () => {
@@ -102,6 +103,7 @@ describe('service renaper basic query', () => {
         await renaperv3({ documento: '32588311', sexo: 'masculino' }, config);
         expect(fetch).toHaveBeenCalled();
         expect(fetch.mock.calls).toMatchSnapshot();
+        fetch.mockReset();
     });
 
     test('renaper query not found', async () => {
@@ -122,25 +124,21 @@ describe('service renaper basic query', () => {
         expect(spySoap).toHaveBeenCalledWith(persona, config);
         expect(ciudadano).toBe(null);
         spySoap.mockReset();
-
     });
 
     test('renaper status success', async () => {
-        const config: soapConn.RenaperConfig = {
+        const config = {
+            host: 'https://federador.msal.gob.ar',
             usuario: 'user',
-            password: 'pass',
-            server: 'http://autoriza:8080/scripts/autorizacion.exe/wsdl/IAutorizacion',
-            url: 'http://autentica:8080/scripts/autenticacion.exe/wsdl/IAutenticacion'
+            clave: 'pass',
+            dominio: 'dominio'
         };
-        const buffer = Buffer.from(JSON.stringify({ documento: '12345', sexo: 'F' }));
-        const res = { Resultado: { $value: buffer } };
-        const spySoap = jest
-            .spyOn(soapConn, 'soapRequest')
-            .mockImplementation(() => res);
-        const estado = await status(config);
-        expect(spySoap).toHaveBeenCalled();
-        expect(estado).toBe(true);
-        spySoap.mockReset();
+        const respuesta = true;
+        fetch.mockReturnValue(Promise.resolve(new Response(JSON.stringify(respuesta))));
+        await status(config);
+        expect(fetch).toHaveBeenCalled();
+        expect(fetch.mock.calls).toMatchSnapshot();
+
     });
 
 });
