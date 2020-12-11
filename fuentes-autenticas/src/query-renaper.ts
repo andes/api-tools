@@ -147,18 +147,19 @@ export function renaperToAndes(ciudadano: any) {
     paciente.estado = 'validado';
     paciente.identificadores = [{
         entidad: 'RENAPER',
-        valor: ciudadano.idciudadano
+        valor: ciudadano.idtramiteprincipal || ''
     }];
+    paciente.idTramite = ciudadano.idtramiteprincipal || '';
     return paciente;
 }
 
-export async function status(config: RenaperConfig) {
+export async function status(config: BusConfig) {
     const persona = {
         documento: '30643636',
         sexo: 'femenino'
     };
-    const soapResp = await soapRequest(persona, config);
-    return (soapResp && soapResp.Resultado['$value'] ? true : false);
+    const renaperResp = await renaperv3(persona, config);
+    return (renaperResp && renaperResp.numeroDocumento ? true : false);
 }
 
 export async function getToken(host: string, usuario: string, pass: string, dominio: string) {
