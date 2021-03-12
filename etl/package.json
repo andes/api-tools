@@ -16,7 +16,8 @@
   "license": "MIT",
   "dependencies": {
     "jsonpath-plus": "^4.0.0",
-    "moment": "^2.29.1"
+    "moment": "^2.29.1",
+    "mongoose": "^5.11.20"
   },
   "devDependencies": {
     "@types/jest": "^22.1.1",
