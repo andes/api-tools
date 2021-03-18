@@ -24,6 +24,7 @@ jobs:
             touch .api-tool-hash
             touch .core-hash
             touch .georeference-hash
+            touch .mongoose-token-search-hash
 
       - run:
           name: Hash projects
@@ -33,6 +34,7 @@ jobs:
             git log --pretty=format:'%H' -n 1 -- api-tool > .api-tool-hash.new
             git log --pretty=format:'%H' -n 1 -- core > .core-hash.new
             git log --pretty=format:'%H' -n 1 -- georeference > .georeference-hash.new
+            git log --pretty=format:'%H' -n 1 -- mongoose-token-search > .mongoose-token-search-hash.new
 
       - run:
           name: Determine changed projects
@@ -57,6 +59,10 @@ jobs:
               touch .project-metadata/.georeference-changed
             fi
 
+            if ! diff .mongoose-token-search-hash{,.new} > /dev/null; then
+              touch .project-metadata/.mongoose-token-search-changed
+            fi
+
       - run:
           name: Set current project hashes
           command: |
@@ -65,6 +71,7 @@ jobs:
             mv .api-tool-hash{.new,}
             mv .core-hash{.new,}
             mv .georeference-hash{.new,}
+            mv .mongoose-token-search-hash{.new,}
 
       - persist_to_workspace:
           root: .
@@ -76,6 +83,7 @@ jobs:
             - api-tool/node_modules
             - core/node_modules
             - georeference/node_modules
+            - mongoose-token-search/node_modules
 
       - save_cache:
           key: v1-project-metadata-{{ .Branch }}-{{ epoch }}
@@ -85,6 +93,7 @@ jobs:
             - .api-tool-hash
             - .query-builder-hash
             - .geofererence-hash
+            - .mongoose-token-search-hash
 
   bootstrap:
     <<: *defaults
@@ -110,6 +119,7 @@ jobs:
             - api-tool/node_modules
             - core/node_modules
             - georeference/node_modules
+            - mongoose-token-search/node_modules
 
   event-bus:
     <<: *defaults
@@ -154,6 +164,28 @@ jobs:
       - run:
           name: Test mongoose-plugin-audit
           command: yarn test --scope=@andes/mongoose-plugin-audit
+
+  mongoose-token-search:
+    <<: *defaults
+    working_directory: ~/api-tools-builds
+    steps:
+      - checkout: { path: ~/api-tools-builds }
+      - attach_workspace: { at: . }
+      - run:
+          name: Check whether project changed
+          command: |
+            if [ -e .project-metadata/.mongoose-token-search-changed ]; then
+              echo "let's do this"
+            else
+              circleci step halt
+            fi
+      - run:
+          name: Lint mongoose-token-search
+          command: yarn run lint --scope=@andes/mongoose-token-search
+
+      - run:
+          name: Test mongoose-token-search
+          command: yarn test --scope=@andes/mongoose-token-search
 
   api-tool:
     <<: *defaults
@@ -234,6 +266,10 @@ workflows:
             - clone_and_hash
             - bootstrap
       - mongoose-plugin-audit:
+          requires:
+            - clone_and_hash
+            - bootstrap
+      - mongoose-token-search:
           requires:
             - clone_and_hash
             - bootstrap

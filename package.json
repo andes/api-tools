@@ -33,6 +33,7 @@
     "georeference",
     "fuentes-autenticas",
     "etl",
-    "services"
+    "services",
+    "mongoose-token-search"
   ]
 }

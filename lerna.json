@@ -8,7 +8,8 @@
     "georeference",
     "fuentes-autenticas",
     "etl",
-    "services"
+    "services",
+    "mongoose-token-search"
   ],
   "npmClient": "yarn",
   "useWorkspaces": true,
