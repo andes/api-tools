@@ -9,7 +9,8 @@ test('should emit true', () => {
                 sumWithArgs: (v: any, n: number) => v + n,
                 concat: (...args: string[]) => {
                     return args.join('');
-                }
+                },
+                eq: (a: any, b: any) => (a === b)
             },
             schemas: {
                 paciente: {
@@ -71,6 +72,18 @@ test('should emit true', () => {
                     args: ['$.paciente.nombre', ' ', '$.paciente.apellido']
                 }
             },
+            if: {
+                $if: {
+                    cond: {
+                        $apply: {
+                            fn: 'eq',
+                            args: ['$.paciente.apellido', 'botta']
+                        }
+                    },
+                    then: '$.paciente.apellido',
+                    else: '$.paciente.nombre',
+                }
+            }
         },
         {
             hola: 10,
@@ -103,5 +116,6 @@ test('should emit true', () => {
     expect(datos.multipleWithTransform[0].gato).toBe('ejecucion');
     expect(datos.multipleWithTransform[1].gato).toBe('validado');
 
+    expect(datos.if).toBe('botta');
 
 });

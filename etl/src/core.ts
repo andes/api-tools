@@ -25,6 +25,7 @@ export function transform(ctx: any, schema: any, data: any) {
         const isArrayClouse = Object.keys(schema).length === 1 && schema['$array'];
         const isApplyClouse = Object.keys(schema).length === 1 && schema['$apply'];
         const isTransformClouse = Object.keys(schema).length === 1 && schema['$transform'];
+        const isIFClouse = Object.keys(schema).length === 1 && schema['$if'];
 
         if (isArrayClouse) {
 
@@ -80,7 +81,24 @@ export function transform(ctx: any, schema: any, data: any) {
 
             return internal;
 
+        } else if (isIFClouse) {
+            const ifData: any = schema['$if'];
 
+            const cond: any = ifData.cond;
+            const thenSchema: any = ifData.then;
+            const elseSchema: any = ifData.else;
+
+            const evalCond: any = transform(ctx, cond, data);
+
+            if (evalCond) {
+                const evalThen: any = transform(ctx, thenSchema, data);
+                return evalThen;
+            } else if (elseSchema) {
+                const evalElse: any = transform(ctx, elseSchema, data);
+                return evalElse;
+            } else {
+                return null;
+            }
         } else {
             const d = {};
             Object.keys(schema).forEach(key => {
