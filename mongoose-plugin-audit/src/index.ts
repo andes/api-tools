@@ -25,66 +25,78 @@ export type AndesDoc<T> = T & mongoose.Document;
 export type AndesDocWithAudit<T> = AndesDoc<T> & AuditTypes;
 
 // Plugin para configurar auditoría
-export function AuditPlugin(schema: mongoose.Schema) {
-    schema.add({
-        createdAt: Date,
-        createdBy: mongoose.Schema.Types.Mixed,
-        updatedAt: Date,
-        updatedBy: mongoose.Schema.Types.Mixed
-    });
+/**
+ * Audit Plugin de Andes para mongoose
+ * @param updated Si es verdadero, setea el campo updatedAt cuando se crea el documento.
+ */
+export function MongooseAuditPlugin(updated = false) {
+    return (schema: mongoose.Schema) => {
+        schema.add({
+            createdAt: Date,
+            createdBy: mongoose.Schema.Types.Mixed,
+            updatedAt: Date,
+            updatedBy: mongoose.Schema.Types.Mixed
+        });
 
-    // Define un método que debe llamarse en el documento principal antes de ejecutar .save()
-    schema.methods.audit = function (req: any) {
-        if (req.user) {
-            const user = { ... (req.user.usuario || req.user.app) };
-            user.organizacion = req.user.organizacion;
-            this.$audit = user;
-        } else {
-            this.$audit = req;
-        }
-
-    };
-
-    schema.pre('save', function (this: any, next: any) {
-        const self = (this as any);
-        let user = self.$audit;
-        let o = self.ownerDocument && self.ownerDocument();
-        while (o && !user) {
-            user = o.$audit;
-            o = o.ownerDocument && o.ownerDocument();
-        }
-
-        if (!user) {
-            return next(new Error('AUDIT PLUGIN ERROR: Inicialice el plugin utilizando el método audit(). Ejemplo: myModel.audit(req.user)'));
-        }
-        // Todo ok...
-
-        if (self.isNew) {
-            if (!self.createdAt) {
-                self.createdAt = new Date();
-                self.createdBy = user;
+        // Define un método que debe llamarse en el documento principal antes de ejecutar .save()
+        schema.methods.audit = function (req: any) {
+            if (req.user) {
+                const user = { ... (req.user.usuario || req.user.app) };
+                user.organizacion = req.user.organizacion;
+                this.$audit = user;
             } else {
-                self.updatedAt = new Date();
-                self.updatedBy = user;
+                this.$audit = req;
             }
-        } else {
-            if (self.isModified()) {
-                self.updatedAt = new Date();
-                self.updatedBy = user;
+
+        };
+
+        schema.pre('save', function (this: any, next: any) {
+            const self = (this as any);
+            let user = self.$audit;
+            let o = self.ownerDocument && self.ownerDocument();
+            while (o && !user) {
+                user = o.$audit;
+                o = o.ownerDocument && o.ownerDocument();
             }
-        }
 
-        next();
-    });
+            if (!user) {
+                return next(new Error('AUDIT PLUGIN ERROR: Inicialice el plugin utilizando el método audit(). Ejemplo: myModel.audit(req.user)'));
+            }
+            // Todo ok...
 
-    schema.post('init', function (this: any) {
-        this._original = this.toObject();
-    });
+            if (self.isNew) {
+                if (!self.createdAt) {
+                    self.createdAt = new Date();
+                    self.createdBy = user;
+                    if (updated) {
+                        self.updatedAt = new Date();
+                        self.updatedBy = user;
+                    }
+                } else {
+                    self.updatedAt = new Date();
+                    self.updatedBy = user;
+                }
+            } else {
+                if (self.isModified()) {
+                    self.updatedAt = new Date();
+                    self.updatedBy = user;
+                }
+            }
 
-    schema.methods.original = function () {
-        return this._original;
+            next();
+        });
+
+        schema.post('init', function (this: any) {
+            this._original = this.toObject();
+        });
+
+        schema.methods.original = function () {
+            return this._original;
+        };
     };
 }
+
+export const AuditPlugin = MongooseAuditPlugin(false);
 
 function extractUser(user: any) {
     const usuario: any = { ... (user.usuario || user.app) };
