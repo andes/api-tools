@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-import { AuditPlugin, AuditDocument } from './index';
+import { AuditPlugin, AuditDocument, MongooseAuditPlugin } from './index';
 import { MongoMemoryServer } from 'mongodb-memory-server-global';
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 600000;
@@ -83,5 +83,18 @@ test('AuditDocument test', () => {
     expect(documento.updatedAt).toBeDefined();
     expect(documento.updatedBy.nombre).toBe('PEDRO');
 
+
+});
+
+test('updatedAt al crear documento', async () => {
+
+    const schema = new mongoose.Schema({});
+    schema.plugin(MongooseAuditPlugin(true));
+    const Model = mongoose.model('prueba3', schema);
+    const m = new Model({});
+    m.audit({ user: { usuario: { documento: '123456' } } });
+    await m.save();
+
+    expect(m.updatedAt).toBeDefined();
 
 });

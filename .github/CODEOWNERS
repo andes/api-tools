@@ -3,3 +3,5 @@ api-tool/* @liquid36
 core/* @liquid36
 event-bus/* @liquid36
 mongoose-pluin-audit/* @liquid36
+
+* @andes/code-review
