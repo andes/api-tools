@@ -1,8 +1,6 @@
 import { ETL } from '@andes/etl';
 
-export async function StaticClient(config: any, datos: any) {
-
-    const etl = new ETL();
+export async function StaticClient(etl: ETL, config: any, datos: any) {
 
     const datosETL = etl.transform(datos, config);
 

@@ -2,9 +2,7 @@ import { ETL } from '@andes/etl';
 const fetch = require('node-fetch');
 const { URLSearchParams } = require('url');
 
-export async function HTTPClient(config: any, datos: any) {
-
-    const etl = new ETL();
+export async function HTTPClient(etl: ETL, config: any, datos: any) {
 
     const datosETL = etl.transform(datos, config);
 

@@ -2,20 +2,28 @@ import { Connection } from 'mongoose';
 import { HTTPClient } from './http-client';
 import { StaticClient } from './static-client';
 import { Logger } from '@andes/log';
+import { MongoClient } from './mongo-client';
+import { ETL } from '@andes/etl';
 
-// [TODO] Logger
 
 export class AndesServices {
 
+    private etl = new ETL();
 
     constructor(
         private mainConnection: Connection,
-        private loggerConnection: Connection
+        private loggerConnection: Connection,
+        private connections: { [key: string]: Connection } = null
     ) {
-
+        this.connections = connections || {};
+        this.connections['main'] = mainConnection;
     }
 
     private _dinamicServices = {};
+
+    addFunction(name: string, fn: any) {
+        this.etl.addFunction(name, fn);
+    }
 
     public register(name: string, fn: any) {
         if (this._dinamicServices[name]) {
@@ -49,26 +57,33 @@ export class AndesServices {
                         case 'http-client':
 
 
-                            value = await HTTPClient(config, params);
+                            value = await HTTPClient(_self.etl, config, params);
 
 
                             break;
 
                         case 'static-client':
 
-                            value = await StaticClient(config, params);
+                            value = await StaticClient(_self.etl, config, params);
 
 
                             break;
 
                         case 'dinamic-client':
-                            const serviceCallback = _self._dinamicServices[name];
+                            const serviceCallback = _self._dinamicServices[config.name];
                             if (!serviceCallback) {
-                                throw new Error(`servicio dinamico [${name}] no encontrado`);
+                                throw new Error(`servicio dinamico [${config.name}] no encontrado`);
 
                             }
 
-                            value = serviceCallback(config, params);
+                            value = await serviceCallback(config, params);
+
+                            break;
+                        case 'mongo-client':
+
+                            value = await MongoClient(_self.etl, _self.connections, config, params);
+
+                            break;
 
                     }
 
