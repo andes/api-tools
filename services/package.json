@@ -1,5 +1,5 @@
 {
-  "name": "@andes/etl",
+  "name": "@andes/services",
   "version": "0.1.0",
   "description": "",
   "main": "build/index.js",
@@ -15,19 +15,21 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "jsonpath-plus": "^4.0.0",
+    "@andes/etl": "^0.1.0",
+    "@andes/log": "^2.2.4",
     "moment": "^2.29.1",
-    "mongoose": "^5.11.20"
+    "mongoose": "^5.11.20",
+    "node-fetch": "^2.6.1"
   },
   "devDependencies": {
     "@types/jest": "^22.1.1",
-    "@types/node": "^12.20.7",
+    "@types/node": "^10.0.0",
     "jest": "^22.1.4",
     "ts-jest": "^22.0.2",
     "ts-node": "^9.0.0",
     "tslint": "^5.9.1",
     "tslint-eslint-rules": "^5.4.0",
     "tslint-react": "^3.4.0",
-    "typescript": "^3.9.9"
+    "typescript": "^3.0.0"
   }
 }

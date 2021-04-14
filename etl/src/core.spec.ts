@@ -24,6 +24,7 @@ test('should emit true', () => {
             }
         },
         {
+            static: 'HOLA',
             nombre: '$.paciente.nombre',
             edad: '$.hola',
             amigo: {
@@ -98,6 +99,7 @@ test('should emit true', () => {
         }
     );
 
+    expect(datos.static).toBe('HOLA');
     expect(datos.nombre).toBe('carlos');
     expect(datos.edad).toBe(10);
     expect(datos.amigo.nombre).toBe('carlos');
