@@ -49,22 +49,22 @@ export async function HTTPClient(config: any, datos: any) {
 // };
 
 
-HTTPClient(
-    {
-        url: {
-            $apply: {
-                fn: 'concat',
-                args: ['$.dominio', '/api/core/tm/paises']
-            }
-        },
-        method: 'GET',
-        params: {
-            nombre: '$.nombre'
-        },
-        json: false
-    },
-    {
-        nombre: 'arg',
-        dominio: 'https://test.andes.gob.ar'
-    }
-).then(console.log);
+// HTTPClient(
+//     {
+//         url: {
+//             $apply: {
+//                 fn: 'concat',
+//                 args: ['$.dominio', '/api/core/tm/paises']
+//             }
+//         },
+//         method: 'GET',
+//         params: {
+//             nombre: '$.nombre'
+//         },
+//         json: false
+//     },
+//     {
+//         nombre: 'arg',
+//         dominio: 'https://test.andes.gob.ar'
+//     }
+// ).then(console.log);

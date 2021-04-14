@@ -28,7 +28,7 @@ export class AndesServices {
         const _self = this;
         return {
             async exec(params: any) {
-                const servicio = await _self.mainConnection.collection('andes-services').findOne({ key: name });
+                const servicio = await _self.mainConnection.collection('andes-services').findOne({ name });
 
                 if (!servicio) {
                     throw new Error(`[${name}] service not found`);
