@@ -34,9 +34,19 @@ export class AndesServices {
 
     public get(name: string) {
         const _self = this;
+        let servicio: any;
         return {
+            async info() {
+                if (!servicio) {
+                    servicio = await _self.mainConnection.collection('andes-services').findOne({ name });
+                }
+
+                return servicio;
+            },
             async exec(params: any) {
-                const servicio = await _self.mainConnection.collection('andes-services').findOne({ name });
+                if (!servicio) {
+                    servicio = await _self.mainConnection.collection('andes-services').findOne({ name });
+                }
 
                 if (!servicio) {
                     throw new Error(`[${name}] service not found`);
@@ -73,7 +83,6 @@ export class AndesServices {
                             const serviceCallback = _self._dinamicServices[config.name];
                             if (!serviceCallback) {
                                 throw new Error(`servicio dinamico [${config.name}] no encontrado`);
-
                             }
 
                             value = await serviceCallback(config, params);
