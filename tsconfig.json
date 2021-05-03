@@ -20,6 +20,9 @@
       ],
       "@andes/fuentes-autenticas/*": [
         "./fuentes-autenticas/src"
+      ],
+      "@andes/etl/*": [
+        "./etl/src"
       ]
     }
   }

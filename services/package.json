@@ -1,0 +1,35 @@
+{
+  "name": "@andes/services",
+  "version": "0.2.0",
+  "description": "",
+  "main": "build/index.js",
+  "module": "build/index.js",
+  "typings": "build/index.d.ts",
+  "scripts": {
+    "prepare": "tsc -p tsconfig.build.json",
+    "start": "tsc -p tsconfig.build.json -w",
+    "lint": "tslint --project tsconfig.build.json",
+    "test": "jest"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@andes/etl": "^0.1.0",
+    "@andes/log": "^2.2.4",
+    "moment": "^2.29.1",
+    "node-fetch": "^2.6.1"
+  },
+  "devDependencies": {
+    "@types/jest": "^22.1.1",
+    "@types/node": "^10.0.0",
+    "jest": "^22.1.4",
+    "mongoose": "^5.12.3",
+    "ts-jest": "^22.0.2",
+    "ts-node": "^9.0.0",
+    "tslint": "^5.9.1",
+    "tslint-eslint-rules": "^5.4.0",
+    "tslint-react": "^3.4.0",
+    "typescript": "^3.0.0"
+  }
+}

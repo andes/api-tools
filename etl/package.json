@@ -1,0 +1,33 @@
+{
+  "name": "@andes/etl",
+  "version": "0.1.0",
+  "description": "",
+  "main": "build/index.js",
+  "module": "build/index.js",
+  "typings": "build/index.d.ts",
+  "scripts": {
+    "prepare": "tsc -p tsconfig.build.json",
+    "start": "tsc -p tsconfig.build.json -w",
+    "lint": "tslint --project tsconfig.build.json",
+    "test": "jest"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "jsonpath-plus": "^4.0.0",
+    "moment": "^2.29.1",
+    "mongoose": "^5.11.20"
+  },
+  "devDependencies": {
+    "@types/jest": "^22.1.1",
+    "@types/node": "^12.20.7",
+    "jest": "^22.1.4",
+    "ts-jest": "^22.0.2",
+    "ts-node": "^9.0.0",
+    "tslint": "^5.9.1",
+    "tslint-eslint-rules": "^5.4.0",
+    "tslint-react": "^3.4.0",
+    "typescript": "^3.9.9"
+  }
+}

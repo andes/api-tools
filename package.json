@@ -31,6 +31,8 @@
     "api-tool",
     "core",
     "georeference",
-    "fuentes-autenticas"
+    "fuentes-autenticas",
+    "etl",
+    "services"
   ]
 }
