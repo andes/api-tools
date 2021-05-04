@@ -1,6 +1,6 @@
 {
   "name": "@andes/etl",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "",
   "main": "build/index.js",
   "module": "build/index.js",
@@ -16,13 +16,13 @@
   "license": "MIT",
   "dependencies": {
     "jsonpath-plus": "^4.0.0",
-    "moment": "^2.29.1",
-    "mongoose": "^5.11.20"
+    "moment": "^2.29.1"
   },
   "devDependencies": {
     "@types/jest": "^22.1.1",
     "@types/node": "^12.20.7",
     "jest": "^22.1.4",
+    "mongoose": "^5.12.7",
     "ts-jest": "^22.0.2",
     "ts-node": "^9.0.0",
     "tslint": "^5.9.1",
