@@ -1,3 +1,4 @@
+import { serialize, deserialize, convertDate } from './json';
 const RedisCache = require('node-cache-redis');
 const MemoryCache = require('memory-cache');
 
@@ -41,6 +42,7 @@ export class AndesCache {
 
     set(key: string, value: any, ttl: number = null): Promise<void> {
         ttl = ttl || this.defaultTTL;
+        value = serialize(value);
         const genKey = this.genKey(key);
         if (this.adapter === 'memory') {
             return new Promise((resolve) => {
@@ -58,9 +60,17 @@ export class AndesCache {
         const genKey = this.genKey(key);
         if (this.adapter === 'memory') {
             const value = this.memoryCache.get(genKey);
-            return Promise.resolve(value);
+            return Promise.resolve(
+                deserialize(value)
+            );
         } else {
-            return this.redisCache.get(genKey);
+            return this.redisCache.get(genKey).then((d: any) => {
+                if (typeof d === 'string') {
+                    return deserialize(d);
+                } else {
+                    return convertDate(d);
+                }
+            })
         }
     }
 

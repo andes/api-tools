@@ -1,9 +1,14 @@
 // import { AndesCache } from './index';
 
-describe('CACHE', () => {
+import { serialize, deserialize } from './json';
+
+describe('CACHE utils', () => {
     it('simple', () => {
-        expect(true).toBe(true);
+        const data = serialize({ a: new Date() });
+        const a = deserialize(data);
+        expect(a.a instanceof Date).toBe(true);
     });
+
     // describe('CACHE IN MEMORY', () => {
     //     let cache: any;
     //     beforeAll(async () => {
@@ -14,7 +19,7 @@ describe('CACHE', () => {
     //         cache = null;
     //     });
 
-    //     it('should simple save string', async (done) => {
+    //     it('should simple save string', async () => {
     //         await cache.set('key', 'hola');
     //         const value: any = await cache.get('key');
     //         expect(value).toBe('hola');
@@ -24,6 +29,12 @@ describe('CACHE', () => {
     //         await cache.set('key3', [1, 2, 3]);
     //         const value: any = await cache.get('key3');
     //         expect(Array.isArray(value)).toBe(true);
+    //     });
+
+    //     it('should simple save date', async () => {
+    //         await cache.set('key4', { d: new Date() });
+    //         const value: any = await cache.get('key4');
+    //         expect(value.d instanceof Date).toBe(true);
     //     });
 
     //     it('timeout expect null', async (done) => {
@@ -58,6 +69,12 @@ describe('CACHE', () => {
     //         await cache.set('key3', [1, 2, 3]);
     //         const value: any = await cache.get('key3');
     //         expect(Array.isArray(value)).toBe(true);
+    //     });
+
+    //     it('should simple save date', async () => {
+    //         await cache.set('key4', { d: new Date() });
+    //         const value: any = await cache.get('key4');
+    //         expect(value.d instanceof Date).toBe(true);
     //     });
 
     //     it('timeout expect null', async (done) => {
