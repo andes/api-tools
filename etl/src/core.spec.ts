@@ -84,7 +84,8 @@ test('should emit true', () => {
                     then: '$.paciente.apellido',
                     else: '$.paciente.nombre',
                 }
-            }
+            },
+            fecha2: new Date()
         },
         {
             hola: 10,
@@ -95,7 +96,8 @@ test('should emit true', () => {
             datos: [
                 { tipo: 'ejecucion' },
                 { tipo: 'validado' },
-            ]
+            ],
+            fecha: new Date()
         }
     );
 
@@ -119,5 +121,6 @@ test('should emit true', () => {
     expect(datos.multipleWithTransform[1].gato).toBe('validado');
 
     expect(datos.if).toBe('botta');
+    expect(datos.fecha2 instanceof Date).toBe(true);
 
 });
