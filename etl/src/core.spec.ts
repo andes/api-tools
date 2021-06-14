@@ -1,5 +1,11 @@
 import { transform } from './core';
 
+
+test('null transform', () => {
+    const datos = transform({}, null, {});
+    expect(datos).toBeNull();
+});
+
 test('should emit true', () => {
 
     const datos = transform(

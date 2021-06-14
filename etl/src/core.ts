@@ -21,6 +21,8 @@ export function transform(ctx: any, schema: any, data: any) {
         return v;
     } else if (schema instanceof Date) {
         return schema;
+    } else if (!schema) {
+        return null;
     } else if (typeof schema === 'object') {
 
         const isArrayClouse = Object.keys(schema).length === 1 && schema['$array'];
