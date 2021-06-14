@@ -1,6 +1,6 @@
 {
   "name": "@andes/services",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "",
   "main": "build/index.js",
   "module": "build/index.js",
@@ -15,7 +15,7 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "@andes/etl": "^0.1.2",
+    "@andes/etl": "^0.1.3",
     "@andes/log": "^2.2.4",
     "moment": "^2.29.1",
     "node-fetch": "^2.6.1"
