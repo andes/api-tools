@@ -2,7 +2,7 @@ export function deserialize(value: string) {
     const dateFormat = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z$/;
 
     function reviver(key: string, value: any) {
-        if (typeof value === "string" && dateFormat.test(value)) {
+        if (typeof value === 'string' && dateFormat.test(value)) {
             return new Date(value);
         }
 
@@ -25,7 +25,7 @@ export function serialize(value: any) {
         }
 
         return value;
-    }
+    };
     const obj = JSON.stringify(value, replacer);
     return obj;
 }
@@ -43,7 +43,6 @@ export function convertDate(data: any) {
     };
     const replacer = function (key: string, value: any) {
         if (typeof (value) === 'string') {
-            console.log(value)
             if (dateISO.test(value)) {
                 return new Date(value);
             }
