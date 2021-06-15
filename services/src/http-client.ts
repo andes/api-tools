@@ -13,11 +13,11 @@ export async function HTTPClient(etl: ETL, config: any, datos: any) {
         url += '?' + urlQuery.toString();
     }
 
-    if (json && opts.body) {
-        opts.body = JSON.stringify(opts.body);
-    } else if (form && opts.body) {
+    if (form && opts.body) {
         const formData = new URLSearchParams(opts.body);
         opts.body = formData.toString();
+    } else if (json && opts.body) {
+        opts.body = JSON.stringify(opts.body);
     }
 
     const res = await fetch(url, opts);
