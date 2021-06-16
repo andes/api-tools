@@ -21,9 +21,11 @@
     "node-fetch": "^2.6.1"
   },
   "devDependencies": {
+    "@andes/core": "^1.9.0",
     "@types/jest": "^22.1.1",
     "@types/node": "^10.0.0",
     "jest": "^22.1.4",
+    "mongodb-memory-server-global": "^6.9.6",
     "mongoose": "^5.12.3",
     "ts-jest": "^22.0.2",
     "ts-node": "^9.0.0",

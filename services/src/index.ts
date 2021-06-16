@@ -4,6 +4,7 @@ import { StaticClient } from './static-client';
 import { Logger } from '@andes/log';
 import { MongoClient } from './mongo-client';
 import { ETL } from '@andes/etl';
+import { AndesCache } from '@andes/core';
 
 
 export class AndesServices {
@@ -13,7 +14,8 @@ export class AndesServices {
     constructor(
         private mainConnection: Connection,
         private loggerConnection: Connection,
-        private connections: { [key: string]: Connection } = null
+        private connections: { [key: string]: Connection } = null,
+        private cacheStore: AndesCache
     ) {
         this.connections = connections || {};
         this.connections['main'] = mainConnection;
@@ -53,6 +55,7 @@ export class AndesServices {
                 }
 
                 const config = servicio.configuration;
+                const cache = servicio.cache;
 
                 let value;
 
@@ -61,39 +64,57 @@ export class AndesServices {
                     error: servicio.logging === true || servicio.logging?.error === true
                 };
 
+                let cacheTtl;
+                let realKey;
+                if (cache && _self.cacheStore) {
+                    cacheTtl = cache.ttl || 60 * 60;
+                    const key = cache.key ? _self.etl.transform(params, cache.key) : 'default';
+                    realKey = `andes-services-${name}-${key}`;
+
+
+                    value = await _self.cacheStore.get(realKey);
+
+                }
+
                 try {
 
-                    switch (servicio.type) {
-                        case 'http-client':
+                    if (!value) {
+                        switch (servicio.type) {
+                            case 'http-client':
 
 
-                            value = await HTTPClient(_self.etl, config, params);
+                                value = await HTTPClient(_self.etl, config, params);
 
 
-                            break;
+                                break;
 
-                        case 'static-client':
+                            case 'static-client':
 
-                            value = await StaticClient(_self.etl, config, params);
+                                value = await StaticClient(_self.etl, config, params);
 
 
-                            break;
+                                break;
 
-                        case 'dinamic-client':
-                            const serviceCallback = _self._dinamicServices[config.name];
-                            if (!serviceCallback) {
-                                throw new Error(`servicio dinamico [${config.name}] no encontrado`);
-                            }
+                            case 'dinamic-client':
+                                const serviceCallback = _self._dinamicServices[config.name];
+                                if (!serviceCallback) {
+                                    throw new Error(`servicio dinamico [${config.name}] no encontrado`);
+                                }
 
-                            value = await serviceCallback(config, params);
+                                value = await serviceCallback(config, params);
 
-                            break;
-                        case 'mongo-client':
+                                break;
+                            case 'mongo-client':
 
-                            value = await MongoClient(_self.etl, _self.connections, config, params);
+                                value = await MongoClient(_self.etl, _self.connections, config, params);
 
-                            break;
+                                break;
 
+                        }
+
+                        if (cache && _self.cacheStore) {
+                            _self.cacheStore.set(realKey, value, cacheTtl);
+                        }
                     }
 
                     if (logInfo.info) {
@@ -107,6 +128,7 @@ export class AndesServices {
                         log.info('exec', params);
 
                     }
+
 
                     return value;
 
