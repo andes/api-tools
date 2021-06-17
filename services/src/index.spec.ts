@@ -65,5 +65,33 @@ test('should emit true', async (done) => {
         expect(value2.hola).toBe('mundo2');
         done();
     });
-
 });
+
+// test('should emit true 2', async (done) => {
+//     const AppCache = new AndesCache({ adapter: 'memory' });
+
+//     const service = new AndesServices(
+//         mongoose.connection,
+//         null,
+//         null,
+//         AppCache
+//     );
+
+//     mongoose.connection.collection('andes-services').insertOne({
+//         name: 'test-2',
+//         type: 'email-client',
+//         configuration: {
+//             server: {
+//                 host: 'host.server.com,
+//                 port: 25
+//             },
+//             to: 'a@a.com',
+//             from: 'ANDES <gato@gmail.com>',
+//             subject: 'HOLA',
+//             html: '<b>hola</b>'
+//         }
+//     });
+
+//     await service.get('test-2').exec();
+//     done();
+// });

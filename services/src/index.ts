@@ -5,6 +5,7 @@ import { Logger } from '@andes/log';
 import { MongoClient } from './mongo-client';
 import { ETL } from '@andes/etl';
 import { AndesCache } from '@andes/core';
+import { EmailClient } from './email-client';
 
 
 export class AndesServices {
@@ -45,7 +46,7 @@ export class AndesServices {
 
                 return servicio;
             },
-            async exec(params: any) {
+            async exec(params: any = {}) {
                 if (!servicio) {
                     servicio = await _self.mainConnection.collection('andes-services').findOne({ name });
                 }
@@ -84,6 +85,13 @@ export class AndesServices {
 
 
                                 value = await HTTPClient(_self.etl, config, params);
+
+
+                                break;
+
+                            case 'email-client':
+
+                                value = await EmailClient(_self.etl, config, params);
 
 
                                 break;
