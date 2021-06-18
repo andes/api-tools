@@ -1,6 +1,6 @@
 {
   "name": "@andes/services",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "",
   "main": "build/index.js",
   "module": "build/index.js",
@@ -22,7 +22,8 @@
     "nodemailer": "^6.6.1"
   },
   "devDependencies": {
-    "@andes/core": "^1.9.0",
+    "@andes/core": "^1.9.1",
+    "@types/express": "^4.17.12",
     "@types/jest": "^22.1.1",
     "@types/node": "^10.0.0",
     "@types/nodemailer": "^6.4.2",
