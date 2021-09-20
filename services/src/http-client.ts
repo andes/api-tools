@@ -25,10 +25,10 @@ export async function HTTPClient(etl: ETL, config: any, datos: any) {
         if (json) {
             return await res.json();
         } else {
-            return res.text();
+            return await res.text();
         }
     } else {
-        throw new Error(res.statusText);
+        throw new Error(await res.text());
     }
 }
 
