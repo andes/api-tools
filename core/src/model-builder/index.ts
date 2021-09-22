@@ -46,6 +46,7 @@ export abstract class ResourceBase<T extends Document = any> {
     public resourceModule = '';
     public resourceName = '';
     public searchFileds: SearchFieldsType = {};
+    public defaultParams: any = {};
 
     public routesEnable = ['get', 'search', 'post', 'patch', 'delete'];
 
@@ -152,6 +153,9 @@ export abstract class ResourceBase<T extends Document = any> {
     }
 
     public async search(data: any, options: IOptions = {}, req: Request = null) {
+        if (this.defaultParams) {
+            data = { ...data, ...this.defaultParams }
+        };
         const preconditions = await this.presearch(data, req);
         const conditions = MongoQuery.buildQuery(data, this.searchFileds);
         options = options || {};
