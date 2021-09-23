@@ -1,13 +1,12 @@
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 
-import { MongoMemoryServer } from 'mongodb-memory-server-global';
-import { ResourceBase } from './index';
-import { MongoQuery } from '../query-builder/in-mongo';
 import { apiOptionsMiddleware } from '@andes/api-tool';
-
+import { MongoMemoryServer } from 'mongodb-memory-server-global';
 import { Document } from 'mongoose';
-import { fn } from 'moment';
+import { MongoQuery } from '../query-builder/in-mongo';
+import { ResourceBase } from './index';
+
 
 const request = require('supertest');
 const express = require('express');
@@ -284,6 +283,48 @@ describe('ResourceBase searching', () => {
     });
 });
 
+describe('ResourceBase default params', () => {
+    let PersonaModel: any;
+    let personaResource: any;
+
+    beforeAll(async () => {
+        const schema = new mongoose.Schema({ nombre: String, active: Boolean });
+        interface IPersona extends Document {
+            nombre: String;
+            active: Boolean;
+        }
+        PersonaModel = mongoose.model('personas_4', schema);
+
+
+        class Personas extends ResourceBase<IPersona> {
+            Model = PersonaModel;
+            defaultParams = {
+                active: true
+            };
+            searchFileds = {
+                active: (b: any) => b,
+                nombre: (text: string) => new RegExp(`^${text}`)
+            };
+        }
+        personaResource = new Personas();
+    });
+
+
+    test('create document', async () => {
+        await personaResource.create({ nombre: 'Carlos Perez', active: true }, {} as any);
+        await personaResource.create({ nombre: 'Carlos Perez', active: false }, {} as any);
+
+        const personasActivas = await personaResource.search({});
+        expect(personasActivas.length).toBe(1);
+
+        const personasActivas2 = await personaResource.search({}, { $default: false });
+        expect(personasActivas2.length).toBe(2);
+
+    });
+
+
+});
+
 
 describe('API - Test', () => {
     let PersonaModel: any;
@@ -424,4 +465,6 @@ describe('API - Test', () => {
             .set('Accept', 'application/json')
             .expect(404);
     });
+
 });
+

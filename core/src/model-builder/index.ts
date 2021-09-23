@@ -1,5 +1,5 @@
-import { Model as _Model, Types, Document } from 'mongoose';
-import { Request, Response, asyncHandler, IOptions, Router, NextFunction } from '@andes/api-tool';
+import { asyncHandler, IOptions, NextFunction, Request, Response, Router } from '@andes/api-tool';
+import { Document, Model as _Model, Types } from 'mongoose';
 import { MongoQuery } from '../query-builder';
 
 
@@ -46,7 +46,7 @@ export abstract class ResourceBase<T extends Document = any> {
     public resourceModule = '';
     public resourceName = '';
     public searchFileds: SearchFieldsType = {};
-    public defaultParams: any = {};
+    public defaultParams: any = null;
 
     public routesEnable = ['get', 'search', 'post', 'patch', 'delete'];
 
@@ -152,10 +152,14 @@ export abstract class ResourceBase<T extends Document = any> {
         return {};
     }
 
-    public async search(data: any, options: IOptions = {}, req: Request = null) {
-        if (this.defaultParams) {
-            data = { ...data, ...this.defaultParams }
-        };
+    public async search(data: any, options: IOptions & { $defualt?: boolean } = {}, req: Request = null) {
+        const isDefaultEnabled = (options as any).$default !== false;
+        if (this.defaultParams && isDefaultEnabled) {
+            data = {
+                ...data,
+                ...this.defaultParams
+            };
+        }
         const preconditions = await this.presearch(data, req);
         const conditions = MongoQuery.buildQuery(data, this.searchFileds);
         options = options || {};
