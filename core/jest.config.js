@@ -8,6 +8,6 @@ module.exports = {
     moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
     testEnvironment: 'node',
     moduleNameMapper: {
-        '@andes/api-tool': '<rootDir>/../api-tool/src'
+        // '@andes/api-tool': '<rootDir>/../api-tool/src'
     }
 }
