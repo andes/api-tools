@@ -90,7 +90,7 @@ export async function renaperv3(persona: any, config: BusConfig, formatter: (per
                 headers
             });
             const datos = await response.json();
-            if (datos && (datos.nombres !== '') && (datos.apellido !== '')) {
+            if (datos?.nombres && datos?.apellido) {
                 datos.documento = persona.documento;
                 datos.sexo = persona.sexo;
                 return formatter ? formatter(datos) : datos;
