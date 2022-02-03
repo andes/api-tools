@@ -91,7 +91,8 @@ test('should emit true', () => {
                     else: '$.paciente.nombre',
                 }
             },
-            fecha2: new Date()
+            fecha2: new Date(),
+            bool: false
         },
         {
             hola: 10,
@@ -128,5 +129,6 @@ test('should emit true', () => {
 
     expect(datos.if).toBe('botta');
     expect(datos.fecha2 instanceof Date).toBe(true);
+    expect(datos.bool).toBe(false);
 
 });

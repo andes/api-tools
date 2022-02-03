@@ -1,11 +1,11 @@
-import { Connection } from 'mongoose';
-import { HTTPClient } from './http-client';
-import { StaticClient } from './static-client';
-import { Logger } from '@andes/log';
-import { MongoClient } from './mongo-client';
-import { ETL } from '@andes/etl';
 import { AndesCache } from '@andes/core';
+import { ETL } from '@andes/etl';
+import { Logger } from '@andes/log';
+import { Connection } from 'mongoose';
 import { EmailClient } from './email-client';
+import { HTTPClient } from './http-client';
+import { MongoClient } from './mongo-client';
+import { StaticClient } from './static-client';
 
 
 export class AndesServices {
@@ -23,6 +23,10 @@ export class AndesServices {
     }
 
     private _dinamicServices = {};
+
+    transform(data: any, schema: any) {
+        return this.etl.transform(data, schema);
+    }
 
     addFunction(name: string, fn: any) {
         this.etl.addFunction(name, fn);
