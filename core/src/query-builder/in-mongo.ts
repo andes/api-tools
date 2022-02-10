@@ -100,6 +100,19 @@ equalOrNull.withField = (field: string) => {
     return { field, fn: equalOrNull };
 };
 
+
+export function containsField(value: boolean) {
+    let query = { $exists: value };
+    if (value) {
+        query['$ne'] = null;
+    };
+    return query;
+}
+
+containsField.withField = (field: string) => {
+    return { field, fn: containsField };
+};
+
 /**
  * Devuelve una query con elemMatch por keyName y valueName
  *
@@ -207,5 +220,6 @@ export const MongoQuery = {
     queryArray,
     buildQuery,
     inArray,
-    equalOrNull
+    equalOrNull,
+    containsField
 };
