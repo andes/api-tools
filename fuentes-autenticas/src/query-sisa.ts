@@ -29,7 +29,7 @@ async function xmlToJson(xml: any) {
     Sexo: sexo
  */
 export async function sisa(persona: any, config: any, formatter: any = null) {
-    const sexo = persona.sexo === 'masculino' ? 'M' : 'F';
+    const sexo = persona.sexo === 'masculino' ? 'M' : persona.sexo === 'femenino' ? 'F' : 'X'; // X = no binario
     const documento = persona.documento;
     const autenticacion = `usuario=${config.username}&clave=${config.password}`;
     const url = `${config.url}nrodoc=${documento}&sexo=${sexo}&${autenticacion}`;
@@ -70,10 +70,12 @@ export function sisaToAndes(ciudadano: any) {
         ubicacion,
         ultimaActualizacion: new Date()
     };
-
     paciente.direccion = [domicilio];
-    paciente.sexo = ciudadano.sexo && ciudadano.sexo === 'F' ? 'femenino' : 'masculino';
-    paciente.genero = ciudadano.sexo && ciudadano.sexo === 'F' ? 'femenino' : 'masculino';
+
+    if (ciudadano.sexo) {
+        paciente.sexo = ciudadano.sexo === 'F' ? 'femenino' : ciudadano.sexo === 'M' ? 'masculino' : 'otro';
+        paciente.genero = paciente.sexo;
+    }
     const fecha = ciudadano.fechaNacimiento ? ciudadano.fechaNacimiento.split('-') : null;
     paciente.fechaNacimiento = (fecha && new Date(fecha[2].substr(0, 4), fecha[1] - 1, fecha[0]) || null);
     const fechaFallecido = (ciudadano.fallecido !== 'NO' && ciudadano.fechaFallecido) ? ciudadano.fechaFallecido.split('-') : null;

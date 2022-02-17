@@ -74,7 +74,7 @@ export interface BusConfig {
 }
 
 export async function renaperv3(persona: any, config: BusConfig, formatter: (persona: any) => any = null) {
-    const idSexo = persona.sexo === 'masculino' ? 2 : 1;
+    const idSexo = persona.sexo === 'masculino' ? 2 : persona.sexo === 'femenino' ? 1 : 3; // 3: sexo no binario
 
     // Se obtiene el token
     const token = await getToken(config.host, config.usuario, config.clave, config.dominio);
@@ -89,11 +89,13 @@ export async function renaperv3(persona: any, config: BusConfig, formatter: (per
                 method: 'GET',
                 headers
             });
-            const datos = await response.json();
-            if (datos && (datos.nombres !== '') && (datos.apellido !== '')) {
-                datos.documento = persona.documento;
-                datos.sexo = persona.sexo;
-                return formatter ? formatter(datos) : datos;
+            if (response.status === 200) {
+                const datos = await response.json();
+                if (datos && (datos.nombres !== '') && (datos.apellido !== '')) {
+                    datos.documento = persona.documento;
+                    datos.sexo = persona.sexo;
+                    return formatter ? formatter(datos) : datos;
+                }
             }
             return null;
         }
