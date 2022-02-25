@@ -1,42 +1,42 @@
 {
-  "name": "@andes/api-tool",
-  "version": "2.1.0",
-  "description": "",
-  "main": "build/index.js",
-  "module": "build/index.js",
-  "typings": "build/index.d.ts",
-  "scripts": {
-    "prepare": "tsc -p tsconfig.build.json",
-    "start": "tsc -p tsconfig.build.json -w",
-    "lint": "tslint --project tsconfig.build.json",
-    "test": "jest"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "MIT",
-  "dependencies": {
-    "body-parser": "^1.19.0",
-    "express": "^4.17.1",
-    "express-async-handler": "^1.1.4",
-    "express-query-boolean": "^2.0.0",
-    "http-status-codes": "^1.4.0",
-    "jsonwebtoken": "^8.5.1",
-    "passport": "^0.4.0",
-    "passport-jwt": "^4.0.0"
-  },
-  "devDependencies": {
-    "babel-jest": "^24.9.0",
-    "@types/passport-jwt": "^3.0.3",
-    "@types/express": "^4.17.1",
-    "@types/jest": "^22.1.1",
-    "@types/node": "^10.0.0",
-    "@types/passport": "^1.0.2",
-    "jest": "^22.1.4",
-    "supertest": "^4.0.2",
-    "ts-jest": "^22.0.2",
-    "tslint": "^5.9.1",
-    "tslint-eslint-rules": "^5.4.0",
-    "tslint-react": "^3.4.0",
-    "typescript": "^3.0.0"
-  }
+    "name": "@andes/api-tool",
+    "version": "2.2.0",
+    "description": "",
+    "main": "build/index.js",
+    "module": "build/index.js",
+    "typings": "build/index.d.ts",
+    "scripts": {
+        "prepare": "tsc -p tsconfig.build.json",
+        "start": "tsc -p tsconfig.build.json -w",
+        "lint": "tslint --project tsconfig.build.json",
+        "test": "jest"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "MIT",
+    "dependencies": {
+        "body-parser": "^1.19.0",
+        "express": "^4.17.1",
+        "express-async-handler": "^1.1.4",
+        "express-query-boolean": "^2.0.0",
+        "http-status-codes": "^1.4.0",
+        "jsonwebtoken": "^8.5.1",
+        "passport": "^0.4.0",
+        "passport-jwt": "^4.0.0"
+    },
+    "devDependencies": {
+        "babel-jest": "^24.9.0",
+        "@types/passport-jwt": "^3.0.3",
+        "@types/express": "^4.17.1",
+        "@types/jest": "^22.1.1",
+        "@types/node": "^10.0.0",
+        "@types/passport": "^1.0.2",
+        "jest": "^22.1.4",
+        "supertest": "^4.0.2",
+        "ts-jest": "^22.0.2",
+        "tslint": "^5.9.1",
+        "tslint-eslint-rules": "^5.4.0",
+        "tslint-react": "^3.4.0",
+        "typescript": "^3.0.0"
+    }
 }
