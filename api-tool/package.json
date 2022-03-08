@@ -1,6 +1,6 @@
 {
     "name": "@andes/api-tool",
-    "version": "2.2.0",
+    "version": "2.3.0",
     "description": "",
     "main": "build/index.js",
     "module": "build/index.js",
