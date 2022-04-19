@@ -163,11 +163,12 @@ export abstract class ResourceBase<T extends Document = any> {
         const preconditions = await this.presearch(data, req);
         const conditions = MongoQuery.buildQuery(data, this.searchFileds);
         options = options || {};
-        const { fields, skip, limit, sort, populate } = options;
+        const { fields, skip, limit, sort, populate, total } = options;
         let query = this.Model.find({
             ...preconditions,
             ...conditions
         });
+        let response;
 
         if (fields) {
             query.select(fields);
@@ -184,8 +185,25 @@ export abstract class ResourceBase<T extends Document = any> {
         if (populate) {
             query.populate(populate);
         }
-
-        return await this.Model.find(query);
+        if (total) {
+            const queryPromises = [this.Model.find(query)];
+            if (skip === 0) {
+                delete query.options;
+                queryPromises.push(this.Model.find(query).count());
+            }
+            const [results, total] = await Promise.all(queryPromises);
+            response = {
+                pagination: {
+                    offset: skip,
+                    limit: limit,
+                    total: total
+                },
+                data: results
+            };
+        } else {
+            response = await this.Model.find(query);
+        }
+        return response;
     }
 
     public async findOne(data: any, options: IOptions = {}, req: Request = null) {

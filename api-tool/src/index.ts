@@ -10,6 +10,7 @@ export function apiOptions(req: ERequest): IOptions {
     options.skip = req.query.skip ? parseInt(req.query.skip as string, 10) : null;
     options.sort = req.query.sort as string;
     options.populate = req.query.populate as string;
+    options.total = req.query.total as string;
     return options;
 }
 
@@ -34,6 +35,7 @@ export interface IOptions {
     limit?: number;
     sort?: string;
     populate?: string;
+    total?: string;
 }
 
 export interface Request extends ERequest {
