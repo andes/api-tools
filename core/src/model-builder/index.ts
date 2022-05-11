@@ -186,9 +186,9 @@ export abstract class ResourceBase<T extends Document = any> {
             query.populate(populate);
         }
         if (total) {
-            const queryPromises = [this.Model.find(query)];
+            const queryPromises: any[] = [this.Model.find(query)];
             if (skip === 0) {
-                delete query.options;
+                delete (query as any).options;
                 queryPromises.push(this.Model.find(query).count());
             }
             const [results, total] = await Promise.all(queryPromises);
@@ -209,7 +209,7 @@ export abstract class ResourceBase<T extends Document = any> {
     public async findOne(data: any, options: IOptions = {}, req: Request = null) {
         options.limit = 1;
         const documents = await this.search(data, options, req);
-        if (documents.length > 0) {
+        if ((documents as any).length > 0) {
             return documents[0];
         }
         return null;

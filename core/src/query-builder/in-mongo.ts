@@ -1,6 +1,6 @@
 import * as moment from 'moment';
 import { makePattern } from './utils';
-import { Types } from 'mongoose';
+import * as mongoose from 'mongoose';
 import { isNullOrUndefined } from 'util';
 
 export function matchDate(value: string) {
@@ -115,8 +115,8 @@ export function queryMatch(value: string, keyName: string, valueName: string) {
         filtro[keyName] = ids[0];
     }
     if (ids[1]) {
-        if (Types.ObjectId.isValid(ids[1])) {
-            filtro[valueName] = Types.ObjectId(ids[1]);
+        if (mongoose.isValidObjectId(ids[1])) {
+            filtro[valueName] = mongoose.isValidObjectId(ids[1]);
         } else {
             filtro[valueName] = partialString(ids[1]);
         }
