@@ -17,7 +17,7 @@ describe('Geonode - Test', () => {
         const res = { a: 1, status: 200 };
         const init = { status: 200 };
         fetch.mockReturnValue(Promise.resolve(new Response(JSON.stringify(res), init)));
-        const response = await geoNodeModule.geonode(p1, 'host', 'user', 'secret');
+        const response = await geoNodeModule.geonode(p1, 'host', 'user', 'secret', {});
         fetch.call({ url: '', options: {} });
         expect(fetch).toHaveBeenCalled();
         expect(response).toEqual(res);
@@ -31,10 +31,10 @@ describe('Geonode - Test', () => {
         };
         const res = { a: 1, status: 400 };
         fetch.mockReturnValue(Promise.resolve(new Response(JSON.stringify(res), { status: 400 })));
-        const response = await geoNodeModule.geonode(p1, 'host', 'user', 'secret');
+        const response = await geoNodeModule.geonode(p1, 'host', 'user', 'secret', {});
         fetch.call({ url: {}, options: {} });
         expect(fetch).toHaveBeenCalled();
-        expect(response).toEqual(null);
+        expect(response.status).toEqual(400);
         jest.restoreAllMocks();
     });
 
@@ -44,13 +44,13 @@ describe('Geonode - Test', () => {
             lat: -38.951643,
             lng: -68.059181
         };
-        const res = { features: [{ properties: { NOMBRE: 'BARRIO SUR' } }] };
+        const res = { features: [{ properties: { nombre: 'BARRIO SUR' } }] };
         const spyNode = jest
             .spyOn(geoNodeModule, 'geonode')
             .mockResolvedValue(() => res);
-        spyNode.call(p1, 'host', 'andes', 'secret');
+        spyNode.call(p1, 'host', 'andes', 'secret', {});
         fetch.mockReturnValue(Promise.resolve(new Response(JSON.stringify(res), { status: 200 })));
-        const response = await geoNodeModule.getBarrio(p1, 'host', 'andes', 'secret');
+        const response = await geoNodeModule.getBarrio(p1, 'host', 'andes', 'secret', {});
         expect(response).toEqual('BARRIO SUR');
     });
 
@@ -66,7 +66,7 @@ describe('Geonode - Test', () => {
             .spyOn(geoNodeModule, 'geonode')
             .mockImplementation(() => res);
         fetch.mockReturnValue(Promise.resolve(new Response(JSON.stringify(res), { status: 200 })));
-        const response = await geoNodeModule.getBarrio(p1, 'host', 'andes', 'secret');
+        const response = await geoNodeModule.getBarrio(p1, 'host', 'andes', 'secret', {});
         spyNode.call(p1, 'host', 'andes', 'secret');
         expect(response).toEqual(null);
     });
