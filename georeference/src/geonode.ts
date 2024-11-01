@@ -16,65 +16,43 @@ proj4.defs('GAUSSKRUGGER', '+proj=tmerc +lat_0=-90 +lon_0=-69 +k=1 +x_0=2500000 
  * [TODO] Aprender la API de Geonode para mejorar la parametrización de esta funcion
  */
 
-export async function geonode(point: Coordenadas, host: string, user: string, password: string) {
+export async function geonode(point: Coordenadas, host: string, user: string, password: string, config: any) {
     if (point) {
         const geoRef = [Number(point.lng), Number(point.lat)];
         const geoRefGK = proj4('GOOGLE', 'GAUSSKRUGGER', geoRef); // geo-referencia en coordenadas gauss-krüger
         const geoBox = (geoRefGK[0] - 10) + ',' + (geoRefGK[1] - 10) + ',' + (geoRefGK[0] + 10) + ',' + (geoRefGK[1] + 10);
+        const auth = (user && password) ? Buffer.from(`${user}:${password}`).toString('base64') : null;
 
-        const auth = Buffer.from(`${user}:${password}`).toString('base64');
-        const options = {
-            json: true,
-            headers: {
-                'Content-Type': 'application/json',
-                Accept: 'application/json',
-                Authorization: `Basic ${auth}`,
-                timeout: '2L'
-            }
-        };
+        let headers: any = {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+            timeout: '2L'
+        }
+        if (auth) {
+            headers.Authorization = `Basic ${auth}`;
+        }
+        const options = { json: true, headers };
 
         try {
-            const params = new URLSearchParams({
-                SERVICE: 'WMS',
-                VERSION: '1.1.1',
-                REQUEST: 'GetFeatureInfo',
-                FORMAT: 'image/png',
-                TRANSPARENT: 'true',
-                QUERY_LAYERS: 'geonode:barrios',
-                LAYERS: 'geonode:barrios',
-                STYLES: 'barrios',
-                FORMAT_OPTIONS: 'antialias:text',
-                INFO_FORMAT: 'application/json',
-                FEATURE_COUNT: '50',
-                X: '50',
-                Y: '50',
-                SRS: 'EPSG:22182',
-                WIDTH: '101',
-                HEIGHT: '101',
-                BBOX: geoBox
-            });
-            const response = await fetch(`${host}/geoserver/geonode/wms?` + params, options);
-            const respuesta = await response.json();
-            if (response.status === 200) {
-                return respuesta;
-            }
-            return null;
+            config.BBOX = geoBox;
+            const params = new URLSearchParams(config);
+            const response = await fetch(`${host}` + params, options);
+            const respuesta = response ? await response.json() : null;
+            return respuesta;
         } catch (error) {
             return null;
         }
     }
 }
 
-
 /**
  * Dado un punto en el mapa devuelve el barrio correspondiente
  */
 
-export async function getBarrio(point: Coordenadas, host: string, user: string, pass: string) {
-    let response = await geonode(point, host, user, pass);
+export async function getBarrio(point: Coordenadas, host: string, user: string, pass: string, config: any) {
+    let response = await geonode(point, host, user, pass, config);
     if (response && response.features.length) {
-        return response.features[0].properties.NOMBRE;
+        return response.features[0].properties.nombre;
     }
     return null;
 }
-
