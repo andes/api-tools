@@ -14,6 +14,7 @@
     "strict": true,
     "pretty": true,
     "jsx": "react",
-    "suppressImplicitAnyIndexErrors": true
+    "suppressImplicitAnyIndexErrors": true,
+    "skipLibCheck": true
   }
 }
