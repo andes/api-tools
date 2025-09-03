@@ -28,41 +28,12 @@ export async function HTTPClient(etl: ETL, config: any, datos: any) {
             return await res.text();
         }
     } else {
-        throw new Error(await res.text());
+        const body = await res.text().catch(() => '');
+        const error = new Error(`HTTP ${res.status} ${res.statusText} - ${body}`);
+        // Agregamos info extra al objeto de error
+        (error as any).status = res.status;
+        (error as any).statusText = res.statusText;
+        (error as any).body = body;
+        throw error;
     }
 }
-
-
-// const servicioEjemplo = {
-//     name: 'sisa-get-ciudadano',
-//     type: 'http-client',
-//     configuration: {
-//         url: '',
-//         method: 'POST',
-//         body: form,
-//         headers: {},
-//         params: {},
-//         json : true
-//     }
-// };
-
-
-// HTTPClient(
-//     {
-//         url: {
-//             $apply: {
-//                 fn: 'concat',
-//                 args: ['$.dominio', '/api/core/tm/paises']
-//             }
-//         },
-//         method: 'GET',
-//         params: {
-//             nombre: '$.nombre'
-//         },
-//         json: false
-//     },
-//     {
-//         nombre: 'arg',
-//         dominio: 'https://test.andes.gob.ar'
-//     }
-// ).then(console.log);
