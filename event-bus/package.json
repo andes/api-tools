@@ -1,34 +1,34 @@
 {
-  "name": "@andes/event-bus",
-  "version": "0.2.5",
-  "description": "",
-  "main": "build/index.js",
-  "module": "build/index.js",
-  "typings": "build/index.d.ts",
-  "scripts": {
-    "prepare": "tsc -p tsconfig.build.json",
-    "start": "tsc -p tsconfig.build.json -w",
-    "lint": "tslint --project tsconfig.build.json",
-    "test": "jest"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "MIT",
-  "dependencies": {
-    "@andes/etl": "^0.1.1",
-    "json-rules-engine": "^6.0.1",
-    "pattern-emitter": "^1.0.0",
-    "request": "^2.88.2"
-  },
-  "devDependencies": {
-    "@types/jest": "^22.2.3",
-    "@types/node": "^10.0.0",
-    "jest": "^22.1.4",
-    "mongoose": "^5.12.7",
-    "ts-jest": "^22.0.2",
-    "tslint": "^5.9.1",
-    "tslint-eslint-rules": "^5.4.0",
-    "tslint-react": "^3.4.0",
-    "typescript": "^4.5.0"
-  }
+    "name": "@andes/event-bus",
+    "version": "0.2.5",
+    "description": "",
+    "main": "build/index.js",
+    "module": "build/index.js",
+    "typings": "build/index.d.ts",
+    "scripts": {
+        "prepare": "tsc -p tsconfig.build.json",
+        "start": "tsc -p tsconfig.build.json -w",
+        "lint": "tslint --project tsconfig.build.json",
+        "test": "jest"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "MIT",
+    "dependencies": {
+        "@andes/etl": "^0.1.1",
+        "json-rules-engine": "^6.0.1",
+        "pattern-emitter": "^1.0.0",
+        "request": "^2.88.2"
+    },
+    "devDependencies": {
+        "@types/jest": "^22.2.3",
+        "@types/node": "^10.0.0",
+        "jest": "^22.1.4",
+        "mongoose": "^5.12.7",
+        "ts-jest": "^22.0.2",
+        "tslint": "^5.9.1",
+        "tslint-eslint-rules": "^5.4.0",
+        "tslint-react": "^3.4.0",
+        "typescript": "^4.4.0"
+    }
 }
