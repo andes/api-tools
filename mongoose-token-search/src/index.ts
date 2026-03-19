@@ -27,7 +27,7 @@ export function TokenSearch(fields: string[]) {
 
         schema.methods._createTokens = function () {
 
-            const modelo = this;
+            const modelo = this as any;
 
             const tokens: string[] = [];
 

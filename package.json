@@ -1,39 +1,39 @@
 {
-  "private": true,
-  "scripts": {
-    "clean": "lerna clean",
-    "bootstrap": "lerna bootstrap",
-    "test": "CI=true lerna run test --stream",
-    "lint": "CI=true lerna run lint --stream",
-    "start": "lerna run --parallel start",
-    "prepare": "rimraf event-bus/build && lerna run prepare",
-    "build": "npm run prepare && lerna run --parallel build"
-  },
-  "devDependencies": {
-    "@commitlint/cli": "^8.1.0",
-    "@commitlint/config-angular": "^8.1.0",
-    "@commitlint/config-lerna-scopes": "^8.1.0",
-    "@types/node": "^10.0.0",
-    "commitlint-circle": "^1.0.0",
-    "husky": "^3.0.4",
-    "lerna": "2.8.0",
-    "rimraf": "^2.6.2",
-    "typescript": "^2.5.2"
-  },
-  "husky": {
-    "hooks": {
-      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
-    }
-  },
-  "workspaces": [
-    "event-bus",
-    "mongoose-plugin-audit",
-    "api-tool",
-    "core",
-    "georeference",
-    "fuentes-autenticas",
-    "etl",
-    "services",
-    "mongoose-token-search"
-  ]
+    "private": true,
+    "scripts": {
+        "clean": "lerna clean",
+        "bootstrap": "lerna bootstrap",
+        "test": "CI=true lerna run test --stream",
+        "lint": "CI=true lerna run lint --stream",
+        "start": "lerna run --parallel start",
+        "prepare": "rimraf event-bus/build && lerna run prepare",
+        "build": "npm run prepare && lerna run --parallel build"
+    },
+    "devDependencies": {
+        "@commitlint/cli": "^8.1.0",
+        "@commitlint/config-angular": "^8.1.0",
+        "@commitlint/config-lerna-scopes": "^8.1.0",
+        "@types/node": "^10.0.0",
+        "commitlint-circle": "^1.0.0",
+        "husky": "^3.0.4",
+        "lerna": "2.8.0",
+        "rimraf": "^2.6.2",
+        "typescript": "^4.4.0"
+    },
+    "husky": {
+        "hooks": {
+            "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
+        }
+    },
+    "workspaces": [
+        "event-bus",
+        "mongoose-plugin-audit",
+        "api-tool",
+        "core",
+        "georeference",
+        "fuentes-autenticas",
+        "etl",
+        "services",
+        "mongoose-token-search"
+    ]
 }
