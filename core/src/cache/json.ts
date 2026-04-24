@@ -1,56 +1,56 @@
-export function deserialize(value: string) {
+export function deserialize(rawValue: string) {
     const dateFormat = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z$/;
 
-    function reviver(key: string, value: any) {
-        if (typeof value === 'string' && dateFormat.test(value)) {
-            return new Date(value);
+    function reviver(key: string, currentValue: any) {
+        if (typeof currentValue === 'string' && dateFormat.test(currentValue)) {
+            return new Date(currentValue);
         }
 
-        return value;
+        return currentValue;
     }
     try {
-        const obj = JSON.parse(value, reviver);
+        const obj = JSON.parse(rawValue, reviver);
         return obj;
     } catch {
-        return value;
+        return rawValue;
     }
 }
 
-export function serialize(value: any) {
+export function serialize(data: any) {
 
-    const replacer = function (this: any, key: string, value: any) {
+    const replacer = function (this: any, key: string, currentValue: any) {
 
         if (this[key] instanceof Date) {
             return this[key].toISOString();
         }
 
-        return value;
+        return currentValue;
     };
-    const obj = JSON.stringify(value, replacer);
+    const obj = JSON.stringify(data, replacer);
     return obj;
 }
 
 export function convertDate(data: any) {
     const dateISO = /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:[.,]\d+)?Z/i;
     const dateNet = /\/Date\((-?\d+)(?:-\d+)?\)\//i;
-    const traverse = function (this: any, o: any, func: any) {
+    const traverse = (o: any, func: any) => {
         for (let i of Object.keys(o)) {
-            o[i] = func.apply(this, [i, o[i]]);
+            o[i] = func(i, o[i]);
             if (o[i] !== null && typeof (o[i]) === 'object') {
                 traverse(o[i], func);
             }
         }
     };
-    const replacer = function (key: string, value: any) {
-        if (typeof (value) === 'string') {
-            if (dateISO.test(value)) {
-                return new Date(value);
+    const replacer = (key: string, currentValue: any) => {
+        if (typeof (currentValue) === 'string') {
+            if (dateISO.test(currentValue)) {
+                return new Date(currentValue);
             }
-            if (dateNet.test(value)) {
-                return new Date(parseInt(dateNet.exec(value)[1], 10));
+            if (dateNet.test(currentValue)) {
+                return new Date(parseInt(dateNet.exec(currentValue)[1], 10));
             }
         }
-        return value;
+        return currentValue;
     };
 
     if (data && typeof data === 'object') {
@@ -58,4 +58,3 @@ export function convertDate(data: any) {
     }
     return data;
 }
-

@@ -20,14 +20,14 @@ export function TokenSearch(fields: string[]) {
         });
 
         schema.pre('save', function (this: any, next: any) {
-            const modelo = this;
+            const modelo = this as any;
             modelo._createTokens();
             next();
         });
 
         schema.methods._createTokens = function () {
 
-            const modelo = this;
+            const modelo = this as any;
 
             const tokens: string[] = [];
 

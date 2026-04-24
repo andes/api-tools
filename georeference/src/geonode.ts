@@ -27,7 +27,7 @@ export async function geonode(point: Coordenadas, host: string, user: string, pa
             'Content-Type': 'application/json',
             Accept: 'application/json',
             timeout: '2L'
-        }
+        };
         if (auth) {
             headers.Authorization = `Basic ${auth}`;
         }
