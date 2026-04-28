@@ -14,9 +14,9 @@
 - For a single Jest file, run it inside the target workspace, for example:
   - `cd api-tool && yarn test --runInBand src/bootstrap/index.spec.ts`
   - `cd core && yarn test --runInBand src/query-builder/select.spec.ts`
-- The currently validated green path is: `yarn install`, `yarn prepare`, `yarn lint`, workspace-scoped tests in `@andes/api-tool`, and pure TypeScript tests such as `core/src/query-builder/select.spec.ts`.
-- The repo-wide `yarn test` command still hangs when it reaches `@andes/mongoose-plugin-audit`; treat that package as the current test blocker.
-- Mongo-backed tests in `core` still need separate investigation; prefer pure TypeScript test files first when validating changes.
+- The currently validated green path is: `yarn install`, `yarn prepare`, `yarn lint`, and `yarn test` from the repo root using Node `18.20.8`.
+- Additional validated workspace checks include `yarn test --scope=@andes/api-tool`, `yarn test --scope=@andes/core`, `yarn test --scope=@andes/services`, and `yarn test --scope=@andes/mongoose-plugin-audit`.
+- Mongo-backed tests in `core`, `services`, `mongoose-plugin-audit`, and `mongoose-token-search` are stabilized on Node 18 with `mongodb-memory-server-global@8.16.1`.
 
 ## High-level architecture
 

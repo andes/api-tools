@@ -29,7 +29,7 @@
         "@types/supertest": "^2.0.8",
         "body-parser": "^1.19.0",
         "jest": "^22.1.4",
-        "mongodb-memory-server-global": "^5.2.5",
+        "mongodb-memory-server-global": "^8.16.1",
         "supertest": "^4.0.2",
         "ts-jest": "^22.4.6",
         "tslint": "^5.9.1",

@@ -1,16 +1,22 @@
 const mongoose = require('mongoose');
+const { TextEncoder, TextDecoder } = require('util');
+
+(global as any).TextEncoder = TextEncoder;
+(global as any).TextDecoder = TextDecoder;
 
 import { AuditPlugin, AuditDocument, MongooseAuditPlugin } from './index';
-import { MongoMemoryServer } from 'mongodb-memory-server-global';
+const { MongoMemoryServer } = require('mongodb-memory-server-global');
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 600000;
 
 let mongoServer: any;
 beforeAll(async () => {
-
-    mongoServer = new MongoMemoryServer();
-    const mongoUri = await mongoServer.getConnectionString();
-    mongoose.connect(mongoUri);
+    mongoServer = await MongoMemoryServer.create({
+        binary: { version: '7.0.24' },
+        instance: { storageEngine: 'wiredTiger' }
+    });
+    const mongoUri = mongoServer.getUri();
+    await mongoose.connect(mongoUri);
 });
 
 afterAll(async () => {

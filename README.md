@@ -24,12 +24,24 @@ El objetivo actual es estabilizar el monorepo sobre:
 - TypeScript `4.4`
 - `@andes/log 3.0.1`
 
+## Resumen de la actualización a Node 18
+
+Para dejar el monorepo estable en Node 18 se hicieron estos cambios:
+
+- se agrego `.nvmrc` con `18.20.8`
+- el `package.json` raiz ahora declara `engines.node = 18.20.8` y `engines.yarn = 1.22.x`
+- CircleCI se alineo a `cimg/node:18.20.8`
+- los tests Mongo de `mongoose-plugin-audit`, `mongoose-token-search`, `core` y `services` se adaptaron a `mongodb-memory-server-global@8.16.1`
+- esos tests Mongo usan `MongoMemoryServer.create(...)`, MongoDB `7.0.24` y `storageEngine: 'wiredTiger'`
+- `fuentes-autenticas` ahora versiona sus snapshots en `src/__snapshots__/`
+
 ## Estado validado hoy
 
-Con Node 18 quedaron validados estos pasos:
+Con Node 18.20.8 quedaron validados estos pasos:
 
 ```bash
-nvm use 18
+nvm install
+nvm use
 npm install -g yarn@1.22
 yarn install
 yarn prepare
@@ -42,15 +54,51 @@ Tambien quedaron validadas estas pruebas representativas:
 cd api-tool && yarn test --runInBand src/index.spec.ts
 cd api-tool && yarn test --runInBand src/bootstrap/index.spec.ts
 cd core && yarn test --runInBand src/query-builder/select.spec.ts
+cd core && yarn test --runInBand src/model-builder/index.spec.ts
+cd mongoose-plugin-audit && yarn test --runInBand src/index.spec.ts
+cd mongoose-token-search && yarn test --runInBand src/index.spec.ts
+cd services && yarn test --runInBand src/index.spec.ts
 ```
 
-Ademas, el comando por workspace tambien funciona en `api-tool`:
+Ademas, estos comandos por workspace tambien funcionan:
 
 ```bash
 yarn test --scope=@andes/api-tool
+yarn test --scope=@andes/mongoose-plugin-audit
+yarn test --scope=@andes/mongoose-token-search
+yarn test --scope=@andes/core
+yarn test --scope=@andes/services
+yarn test --scope=@andes/event-bus
 ```
 
-El test global del monorepo (`yarn test`) todavia no esta estabilizado: hoy avanza en varios paquetes, pero queda trabado al llegar a `@andes/mongoose-plugin-audit`.
+Tambien quedo validado el test global del monorepo:
+
+```bash
+yarn test
+```
+
+## Ejecucion rapida desde cero
+
+Si queres clonar el repo y probarlo desde cero, estos son los pasos actualizados:
+
+```bash
+git clone <repo>
+cd api-tools
+nvm install
+nvm use
+node -v
+npm install -g yarn@1.22
+yarn -v
+yarn install
+yarn prepare
+yarn lint
+yarn test
+```
+
+Valores esperados:
+
+- `node -v` -> `v18.20.8`
+- `yarn -v` -> `1.22.x`
 
 ## Comandos del monorepo
 
@@ -104,10 +152,11 @@ yarn test --runInBand src/geocode.spec.ts
 
 ## Flujo recomendado de desarrollo
 
-1. Instalar dependencias:
+1. Cargar la version correcta de Node e instalar dependencias:
 
 ```bash
-nvm use 18
+nvm install
+nvm use
 npm install -g yarn@1.22
 yarn install
 ```
@@ -128,8 +177,20 @@ yarn lint
 
 ```bash
 yarn test --scope=@andes/api-tool
+cd mongoose-plugin-audit && yarn test --runInBand src/index.spec.ts
+cd mongoose-token-search && yarn test --runInBand src/index.spec.ts
+cd services && yarn test --runInBand src/index.spec.ts
 cd core && yarn test --runInBand src/query-builder/select.spec.ts
+cd core && yarn test --runInBand src/model-builder/index.spec.ts
 ```
+
+5. Si queres medir el estado global actual del monorepo:
+
+```bash
+yarn test
+```
+
+Hoy ese comando ya pasa completo en Node 18.20.8.
 
 ## Estado actual de la actualizacion
 
@@ -138,13 +199,25 @@ Hoy el build del monorepo ya esta estabilizado en Node 18:
 - `yarn install` funciona
 - `yarn prepare` funciona
 - `yarn lint` funciona
+- `yarn test` funciona
+- CircleCI usa el mismo runtime validado localmente
+- `@andes/mongoose-token-search`, `core/src/model-builder/index.spec.ts` y `services/src/index.spec.ts` ya corren en Node 18
 
-El foco que sigue es completar la estabilizacion del stack de tests:
+El foco que sigue es sostener este baseline y decidir si conviene subir runtime o tooling otra vez.
 
-- mantener verdes los tests puros de TypeScript
-- aislar y corregir el cuelgue actual de `@andes/mongoose-plugin-audit`
-- seguir revisando los tests integrados con Mongo que todavia necesitan investigacion aparte
-- despues de eso, evaluar si conviene subir runtime o tooling otra vez
+## Warnings conocidos que hoy no bloquean
+
+Al ejecutar `yarn test` en Node `18.20.8` todavia aparecen algunos warnings de dependencias viejas. Hoy no rompen el build ni el suite completo, pero conviene tenerlos presentes para una futura modernizacion:
+
+| Paquete | Warning actual | Posible trabajo futuro |
+| --- | --- | --- |
+| `core`, `services`, `mongoose-plugin-audit`, `mongoose-token-search` | `current URL string parser is deprecated` | revisar la configuracion de conexion Mongoose/MongoDB y migrar a opciones modernas del driver |
+| `services` | `Current Server Discovery and Monitoring engine is deprecated` | migrar a `useUnifiedTopology` o a una version mas nueva del driver/Mongoose |
+| `mongoose-token-search` | `collection.ensureIndex is deprecated` | reemplazar `ensureIndex` por `createIndexes` o por la API equivalente del schema |
+| `event-bus` | warning de Mongoose sobre `Jest's default jsdom test environment` | revisar si conviene explicitar `testEnvironment: 'node'` en su `jest.config.js` |
+| `event-bus`, `fuentes-autenticas` | `Buffer() is deprecated` | ubicar llamadas legacy a `Buffer()` y migrarlas a `Buffer.from` / `Buffer.alloc` |
+
+Estos warnings quedaron observados en una ejecucion limpia desde cero del monorepo con Node `18.20.8`.
 
 ## Convenciones utiles para entender el repo
 
@@ -168,3 +241,6 @@ lerna add <paquete> --scope=@andes/<workspace>
 - Si cambias tipos compartidos o imports internos, revisa tambien el mapeo de paths en `tsconfig.json`.
 - Si trabajas sobre APIs basadas en Mongoose, arranca por `core/src/model-builder` y `api-tool/src/bootstrap`.
 - Si tocas testing, evita reintroducir `babel-jest` en paquetes que solo corren tests TypeScript.
+- Los tests Mongo que quedaron estabilizados en Node 18 usan `mongodb-memory-server-global@8.16.1` con `MongoMemoryServer.create(...)`, MongoDB `7.0.24` y `storageEngine: 'wiredTiger'`.
+- `fuentes-autenticas` ahora tiene snapshots versionados en `src/__snapshots__/`.
+- CircleCI ya quedo alineado con Node `18.20.8` usando `cimg/node:18.20.8`.

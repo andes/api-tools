@@ -1,5 +1,9 @@
 {
   "private": true,
+  "engines": {
+    "node": "18.20.8",
+    "yarn": "1.22.x"
+  },
   "scripts": {
     "clean": "lerna clean",
     "bootstrap": "lerna bootstrap",

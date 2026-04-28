@@ -1,0 +1,61 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`service sisa basic query query ciudadano sisa 1`] = `
+Array [
+  Array [
+    "https://obtenerciudadano?nrodoc=1111111&sexo=X&usuario=user&clave=pass",
+  ],
+]
+`;
+
+exports[`service sisa basic query query establecimiento 1`] = `
+Array [
+  Array [
+    "https://obtenerciudadano?nrodoc=1111111&sexo=X&usuario=user&clave=pass",
+  ],
+  Array [
+    "https://pruebas/sisa/services/rest/establecimiento/prestaciones/10580352167033",
+    Object {
+      "body": "{\\"usuario\\":\\"user\\",\\"clave\\":\\"pass\\"}",
+      "headers": Object {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+      },
+      "json": true,
+      "method": "POST",
+    },
+  ],
+  Array [
+    "https://pruebas/sisa/services/rest/establecimiento/10580352167033",
+    Object {
+      "body": "{\\"usuario\\":\\"user\\",\\"clave\\":\\"pass\\"}",
+      "headers": Object {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+      },
+      "json": true,
+      "method": "POST",
+    },
+  ],
+]
+`;
+
+exports[`service sisa basic query query prestaciones 1`] = `
+Array [
+  Array [
+    "https://obtenerciudadano?nrodoc=1111111&sexo=X&usuario=user&clave=pass",
+  ],
+  Array [
+    "https://pruebas/sisa/services/rest/establecimiento/prestaciones/10580352167033",
+    Object {
+      "body": "{\\"usuario\\":\\"user\\",\\"clave\\":\\"pass\\"}",
+      "headers": Object {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+      },
+      "json": true,
+      "method": "POST",
+    },
+  ],
+]
+`;
