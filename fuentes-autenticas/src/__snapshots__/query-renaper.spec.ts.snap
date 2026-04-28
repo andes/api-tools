@@ -1,0 +1,50 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`service renaper basic query renaper status success 1`] = `
+Array [
+  Array [
+    "https://federador.msal.gob.ar/usuarios/aplicacion/login",
+    Object {
+      "body": "{\\"nombre\\":\\"user\\",\\"clave\\":\\"pass\\",\\"codDominio\\":\\"dominio\\"}",
+      "headers": Object {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+      },
+      "json": true,
+      "method": "POST",
+    },
+  ],
+]
+`;
+
+exports[`service renaper basic query renaper v2 query success 1`] = `
+Array [
+  Array [
+    "http://prueba/r1/roksnet/GOV/71111229/GP-RENAPER/WS_Renaper_Documento_3/32588311/M",
+    Object {
+      "headers": Object {
+        "Content-type": "application/json",
+        "X-Road-Client": "roksnet/GOV/70000000/GP-SALUD",
+      },
+      "method": "GET",
+    },
+  ],
+]
+`;
+
+exports[`service renaper basic query renaper v3 query success 1`] = `
+Array [
+  Array [
+    "https://federador.msal.gob.ar/usuarios/aplicacion/login",
+    Object {
+      "body": "{\\"nombre\\":\\"user\\",\\"clave\\":\\"pass\\",\\"codDominio\\":\\"dominio\\"}",
+      "headers": Object {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+      },
+      "json": true,
+      "method": "POST",
+    },
+  ],
+]
+`;

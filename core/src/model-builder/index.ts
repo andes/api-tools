@@ -185,7 +185,7 @@ export abstract class ResourceBase<T extends Document = any> {
             query.populate(populate);
         }
 
-        return await this.Model.find(query);
+        return await query.exec();
     }
 
     public async findOne(data: any, options: IOptions = {}, req: Request = null) {

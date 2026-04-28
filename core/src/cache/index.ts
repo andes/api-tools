@@ -70,7 +70,7 @@ export class AndesCache {
                 } else {
                     return convertDate(d);
                 }
-            })
+            });
         }
     }
 

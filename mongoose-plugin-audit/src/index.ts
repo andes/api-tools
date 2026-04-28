@@ -40,12 +40,13 @@ export function MongooseAuditPlugin(updated = false) {
 
         // Define un método que debe llamarse en el documento principal antes de ejecutar .save()
         schema.methods.audit = function (req: any) {
+            const self = (this as any);
             if (req.user) {
                 const user = { ... (req.user.usuario || req.user.app) };
                 user.organizacion = req.user.organizacion;
-                this.$audit = user;
+                self.$audit = user;
             } else {
-                this.$audit = req;
+                self.$audit = req;
             }
 
         };
@@ -91,7 +92,7 @@ export function MongooseAuditPlugin(updated = false) {
         });
 
         schema.methods.original = function () {
-            return this._original;
+            return (this as any)._original;
         };
     };
 }

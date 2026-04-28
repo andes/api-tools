@@ -1,0 +1,296 @@
+0 silly input [ 'test' ]
+1 silly flags {
+1 silly flags   _: [ 'run' ],
+1 silly flags   'reject-cycles': false,
+1 silly flags   rejectCycles: false,
+1 silly flags   stream: true,
+1 silly flags   script: 'test',
+1 silly flags   args: []
+1 silly flags }
+2 verbose rootPath /home/agus/work/api-tools
+3 info version 2.8.0
+4 silly existsSync /home/agus/work/api-tools/VERSION
+5 silly initialize attempt
+6 silly initialize success
+7 silly execute attempt
+8 silly runScriptInPackageStreaming [ 'test', [], '@andes/mongoose-plugin-audit' ]
+9 silly getExecOpts { cwd: '/home/agus/work/api-tools/mongoose-plugin-audit' }
+10 silly runScriptInPackageStreaming [ 'test', [], '@andes/api-tool' ]
+11 silly getExecOpts { cwd: '/home/agus/work/api-tools/api-tool' }
+12 silly runScriptInPackageStreaming [ 'test', [], '@andes/georeference' ]
+13 silly getExecOpts { cwd: '/home/agus/work/api-tools/georeference' }
+14 silly runScriptInPackageStreaming [ 'test', [], '@andes/fuentes-autenticas' ]
+15 silly getExecOpts { cwd: '/home/agus/work/api-tools/fuentes-autenticas' }
+16 silly runScriptInPackageStreaming [ 'test', [], '@andes/etl' ]
+17 silly getExecOpts { cwd: '/home/agus/work/api-tools/etl' }
+18 error execute callback with error
+19 error Error: Command failed: yarn run test
+19 error (node:172815) [DEP0005] DeprecationWarning: Buffer() is deprecated due to security and usability issues. Please use the Buffer.alloc(), Buffer.allocUnsafe(), or Buffer.from() methods instead.
+19 error (Use `node --trace-deprecation ...` to show where the warning was created)
+19 error FAIL src/query-sisa.spec.ts
+19 error   ● service sisa basic query › query ciudadano sisa
+19 error
+19 error     expect(received).toMatchSnapshot()
+19 error
+19 error     Snapshot name: `service sisa basic query query ciudadano sisa 1`
+19 error
+19 error     New snapshot was not written. The update flag must be explicitly passed to write a new snapshot.
+19 error
+19 error     This is likely because this test is run in a continuous integration (CI) environment in which snapshots are not written by default.
+19 error
+19 error     Received:
+19 error     Array [
+19 error       Array [
+19 error         "https://obtenerciudadano?nrodoc=1111111&sexo=X&usuario=user&clave=pass",
+19 error       ],
+19 error     ]
+19 error
+19 error       33 |         expect(datos).toHaveProperty('apellido');
+19 error       34 |         expect(fetch).toHaveBeenCalled();
+19 error     > 35 |         expect(fetch.mock.calls).toMatchSnapshot();
+19 error          |                                  ^
+19 error       36 |     });
+19 error       37 |
+19 error       38 |     test('query prestaciones', async () => {
+19 error
+19 error       at src/query-sisa.spec.ts:35:34
+19 error       at step (src/query-sisa.spec.ts:5:25)
+19 error       at Object.next (src/query-sisa.spec.ts:5:25)
+19 error       at fulfilled (src/query-sisa.spec.ts:5:25)
+19 error       at processTicksAndRejections (node:internal/process/task_queues:95:5)
+19 error
+19 error   ● service sisa basic query › query prestaciones
+19 error
+19 error     expect(received).toMatchSnapshot()
+19 error
+19 error     Snapshot name: `service sisa basic query query prestaciones 1`
+19 error
+19 error     New snapshot was not written. The update flag must be explicitly passed to write a new snapshot.
+19 error
+19 error     This is likely because this test is run in a continuous integration (CI) environment in which snapshots are not written by default.
+19 error
+19 error     Received:
+19 error     Array [
+19 error       Array [
+19 error         "https://obtenerciudadano?nrodoc=1111111&sexo=X&usuario=user&clave=pass",
+19 error       ],
+19 error       Array [
+19 error         "https://pruebas/sisa/services/rest/establecimiento/prestaciones/10580352167033",
+19 error         Object {
+19 error           "body": "{\"usuario\":\"user\",\"clave\":\"pass\"}",
+19 error           "headers": Object {
+19 error             "Accept": "application/json",
+19 error             "Content-Type": "application/json",
+19 error           },
+19 error           "json": true,
+19 error           "method": "POST",
+19 error         },
+19 error       ],
+19 error     ]
+19 error
+19 error       55 |         expect(datos).toHaveLength(1);
+19 error       56 |         expect(fetch).toHaveBeenCalled();
+19 error     > 57 |         expect(fetch.mock.calls).toMatchSnapshot();
+19 error          |                                  ^
+19 error       58 |     });
+19 error       59 |
+19 error       60 |     test('query establecimiento', async () => {
+19 error
+19 error       at src/query-sisa.spec.ts:57:34
+19 error       at step (src/query-sisa.spec.ts:5:25)
+19 error       at Object.next (src/query-sisa.spec.ts:5:25)
+19 error       at fulfilled (src/query-sisa.spec.ts:5:25)
+19 error       at processTicksAndRejections (node:internal/process/task_queues:95:5)
+19 error
+19 error   ● service sisa basic query › query establecimiento
+19 error
+19 error     expect(received).toMatchSnapshot()
+19 error
+19 error     Snapshot name: `service sisa basic query query establecimiento 1`
+19 error
+19 error     New snapshot was not written. The update flag must be explicitly passed to write a new snapshot.
+19 error
+19 error     This is likely because this test is run in a continuous integration (CI) environment in which snapshots are not written by default.
+19 error
+19 error     Received:
+19 error     Array [
+19 error       Array [
+19 error         "https://obtenerciudadano?nrodoc=1111111&sexo=X&usuario=user&clave=pass",
+19 error       ],
+19 error       Array [
+19 error         "https://pruebas/sisa/services/rest/establecimiento/prestaciones/10580352167033",
+19 error         Object {
+19 error           "body": "{\"usuario\":\"user\",\"clave\":\"pass\"}",
+19 error           "headers": Object {
+19 error             "Accept": "application/json",
+19 error             "Content-Type": "application/json",
+19 error           },
+19 error           "json": true,
+19 error           "method": "POST",
+19 error         },
+19 error       ],
+19 error       Array [
+19 error         "https://pruebas/sisa/services/rest/establecimiento/10580352167033",
+19 error         Object {
+19 error           "body": "{\"usuario\":\"user\",\"clave\":\"pass\"}",
+19 error           "headers": Object {
+19 error             "Accept": "application/json",
+19 error             "Content-Type": "application/json",
+19 error           },
+19 error           "json": true,
+19 error           "method": "POST",
+19 error         },
+19 error       ],
+19 error     ]
+19 error
+19 error       82 |         expect(datos).toHaveProperty('nombre');
+19 error       83 |         expect(fetch).toHaveBeenCalled();
+19 error     > 84 |         expect(fetch.mock.calls).toMatchSnapshot();
+19 error          |                                  ^
+19 error       85 |     });
+19 error       86 |
+19 error       87 | });
+19 error
+19 error       at src/query-sisa.spec.ts:84:34
+19 error       at step (src/query-sisa.spec.ts:5:25)
+19 error       at Object.next (src/query-sisa.spec.ts:5:25)
+19 error       at fulfilled (src/query-sisa.spec.ts:5:25)
+19 error       at processTicksAndRejections (node:internal/process/task_queues:95:5)
+19 error
+19 error  › 3 snapshots failed.
+19 error (node:172816) [DEP0005] DeprecationWarning: Buffer() is deprecated due to security and usability issues. Please use the Buffer.alloc(), Buffer.allocUnsafe(), or Buffer.from() methods instead.
+19 error (Use `node --trace-deprecation ...` to show where the warning was created)
+19 error FAIL src/query-renaper.spec.ts
+19 error   ● service renaper basic query › renaper v2 query success
+19 error
+19 error     expect(received).toMatchSnapshot()
+19 error
+19 error     Snapshot name: `service renaper basic query renaper v2 query success 1`
+19 error
+19 error     New snapshot was not written. The update flag must be explicitly passed to write a new snapshot.
+19 error
+19 error     This is likely because this test is run in a continuous integration (CI) environment in which snapshots are not written by default.
+19 error
+19 error     Received:
+19 error     Array [
+19 error       Array [
+19 error         "http://prueba/r1/roksnet/GOV/71111229/GP-RENAPER/WS_Renaper_Documento_3/32588311/M",
+19 error         Object {
+19 error           "headers": Object {
+19 error             "Content-type": "application/json",
+19 error             "X-Road-Client": "roksnet/GOV/70000000/GP-SALUD",
+19 error           },
+19 error           "method": "GET",
+19 error         },
+19 error       ],
+19 error     ]
+19 error
+19 error       75 |         await renaperv2({ documento: '32588311', sexo: 'M' }, config);
+19 error       76 |         expect(fetch).toHaveBeenCalled();
+19 error     > 77 |         expect(fetch.mock.calls).toMatchSnapshot();
+19 error          |                                  ^
+19 error       78 |         fetch.mockReset();
+19 error       79 |     });
+19 error       80 |
+19 error
+19 error       at src/query-renaper.spec.ts:77:34
+19 error       at step (src/query-renaper.spec.ts:7:25)
+19 error       at Object.next (src/query-renaper.spec.ts:7:25)
+19 error       at fulfilled (src/query-renaper.spec.ts:7:25)
+19 error       at processTicksAndRejections (node:internal/process/task_queues:95:5)
+19 error
+19 error   ● service renaper basic query › renaper v3 query success
+19 error
+19 error     expect(received).toMatchSnapshot()
+19 error
+19 error     Snapshot name: `service renaper basic query renaper v3 query success 1`
+19 error
+19 error     New snapshot was not written. The update flag must be explicitly passed to write a new snapshot.
+19 error
+19 error     This is likely because this test is run in a continuous integration (CI) environment in which snapshots are not written by default.
+19 error
+19 error     Received:
+19 error     Array [
+19 error       Array [
+19 error         "https://federador.msal.gob.ar/usuarios/aplicacion/login",
+19 error         Object {
+19 error           "body": "{\"nombre\":\"user\",\"clave\":\"pass\",\"codDominio\":\"dominio\"}",
+19 error           "headers": Object {
+19 error             "Accept": "application/json",
+19 error             "Content-Type": "application/json",
+19 error           },
+19 error           "json": true,
+19 error           "method": "POST",
+19 error         },
+19 error       ],
+19 error     ]
+19 error
+19 error       103 |         await renaperv3({ documento: '32588311', sexo: 'masculino' }, config);
+19 error       104 |         expect(fetch).toHaveBeenCalled();
+19 error     > 105 |         expect(fetch.mock.calls).toMatchSnapshot();
+19 error           |                                  ^
+19 error       106 |         fetch.mockReset();
+19 error       107 |     });
+19 error       108 |
+19 error
+19 error       at src/query-renaper.spec.ts:105:34
+19 error       at step (src/query-renaper.spec.ts:7:25)
+19 error       at Object.next (src/query-renaper.spec.ts:7:25)
+19 error       at fulfilled (src/query-renaper.spec.ts:7:25)
+19 error       at processTicksAndRejections (node:internal/process/task_queues:95:5)
+19 error
+19 error   ● service renaper basic query › renaper status success
+19 error
+19 error     expect(received).toMatchSnapshot()
+19 error
+19 error     Snapshot name: `service renaper basic query renaper status success 1`
+19 error
+19 error     New snapshot was not written. The update flag must be explicitly passed to write a new snapshot.
+19 error
+19 error     This is likely because this test is run in a continuous integration (CI) environment in which snapshots are not written by default.
+19 error
+19 error     Received:
+19 error     Array [
+19 error       Array [
+19 error         "https://federador.msal.gob.ar/usuarios/aplicacion/login",
+19 error         Object {
+19 error           "body": "{\"nombre\":\"user\",\"clave\":\"pass\",\"codDominio\":\"dominio\"}",
+19 error           "headers": Object {
+19 error             "Accept": "application/json",
+19 error             "Content-Type": "application/json",
+19 error           },
+19 error           "json": true,
+19 error           "method": "POST",
+19 error         },
+19 error       ],
+19 error     ]
+19 error
+19 error       138 |         await status(config);
+19 error       139 |         expect(fetch).toHaveBeenCalled();
+19 error     > 140 |         expect(fetch.mock.calls).toMatchSnapshot();
+19 error           |                                  ^
+19 error       141 |
+19 error       142 |     });
+19 error       143 |
+19 error
+19 error       at src/query-renaper.spec.ts:140:34
+19 error       at step (src/query-renaper.spec.ts:7:25)
+19 error       at Object.next (src/query-renaper.spec.ts:7:25)
+19 error       at fulfilled (src/query-renaper.spec.ts:7:25)
+19 error       at processTicksAndRejections (node:internal/process/task_queues:95:5)
+19 error
+19 error  › 3 snapshots failed.
+19 error Snapshot Summary
+19 error  › 6 snapshots failed from 2 test suites. Inspect your code changes or run `yarn test -u` to update them.
+19 error
+19 error Test Suites: 2 failed, 2 total
+19 error Tests:       6 failed, 2 passed, 8 total
+19 error Snapshots:   6 failed, 6 total
+19 error Time:        2.114s, estimated 3s
+19 error Ran all test suites.
+19 error error Command failed with exit code 1.
+19 error
+19 error $ jest
+19 error info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command.
+19 error
+19 error     at /home/agus/work/api-tools/node_modules/lerna/node_modules/execa/index.js:236:11
